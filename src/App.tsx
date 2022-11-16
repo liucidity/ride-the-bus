@@ -16,7 +16,9 @@ function App() {
         <img alt='card-back' src="card-back.png" className="h-64"/>
       </div>
 
-
+      <div>
+        Pick an option
+      </div>
       <div className='flex flex-row justify-center'>
       <Button option={'Higher'}/>
       <Button option={'Lower'}/>
