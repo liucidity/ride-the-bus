@@ -1,10 +1,10 @@
 import './index.css';
-import { useApplicationData } from './helpers/deckApiHelpers';
+import { useApplicationData } from './helpers/useApplicationData';
 
 function App() {
 
   const {
-    deck,
+    state,
     updateDeck,
   } = useApplicationData();
 
@@ -14,8 +14,13 @@ function App() {
         Hello world!
       </h1>
       <div>
-        {deck && deck.deck_id}
+        {state.deck && state.deck.deck_id}
         <button onClick={() => updateDeck('new')}>New Deck</button>
+      </div>
+      <div>
+        {state.card && state.card.code}
+        {state.card && <img alt='card' src={state.card.image}></img>}
+        <button onClick={() => updateDeck('draw')}>Draw Card</button>
       </div>
     </div>
   );
