@@ -8,8 +8,8 @@ export const useApplicationData = () => {
 
   const reducer = (state, action) => {
     const reducers = {
-      NEW_DECK: state => ({...state, deck: action.deck}),
-      DRAW: state => ({...state, card: action.card}),
+      NEW_DECK: state => ({ ...state, deck: action.deck }),
+      DRAW: state => ({ ...state, card: action.card }),
     }
     return reducers[action.type](state) || reducers.default();
   }
@@ -23,29 +23,29 @@ export const useApplicationData = () => {
   const updateDeck = (action) => {
     if (action === 'new') {
       return axios
-      .get('https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
-      .then(res => {
-        dispatch({
-          type: NEW_DECK,
-          deck: res.data,
+        .get('https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
+        .then(res => {
+          dispatch({
+            type: NEW_DECK,
+            deck: res.data,
+          })
         })
-      })
-      .catch(err => {
-        console.log("Error loading: ", err);
-      })
+        .catch(err => {
+          console.log("Error loading: ", err);
+        })
     }
     if (action === 'draw') {
       return axios
-      .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=1`)
-      .then(res => {
-        dispatch({
-          type: DRAW,
-          card: res.data.cards[0],
+        .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=1`)
+        .then(res => {
+          dispatch({
+            type: DRAW,
+            card: res.data.cards[0],
+          })
         })
-      })
-      .catch(err => {
-        console.log("Error loading: ", err);
-      })
+        .catch(err => {
+          console.log("Error loading: ", err);
+        })
     }
   }
 
