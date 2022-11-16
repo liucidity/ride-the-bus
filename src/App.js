@@ -1,17 +1,12 @@
 import './index.css';
-import updateDeck from './helpers/deckApiHelpers';
-import { useEffect, useState } from 'react';
+import { useApplicationData } from './helpers/deckApiHelpers';
 
 function App() {
 
-  const [ deck, setDeck ] = useState()
-
-  useEffect(() => {
-    let newDeck = updateDeck('new');
-    setDeck(newDeck)
-  }, [])
-
-  console.log('deck:', deck)
+  const {
+    deck,
+    updateDeck,
+  } = useApplicationData();
 
   return (
     <div className="App">
@@ -19,7 +14,8 @@ function App() {
         Hello world!
       </h1>
       <div>
-        {/* {deck.deck_id} */}
+        {deck && deck.deck_id}
+        <button onClick={() => updateDeck('new')}>New Deck</button>
       </div>
     </div>
   );
