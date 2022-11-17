@@ -42,7 +42,7 @@ function App() {
         
         state.card.map((card:any, index:number) => {
           return (
-            <Card value={card.code} image={card.image} face={(state.round-2) >= index}/>
+            <Card value={card.code} image={card.image} face={state.faces[index]}/>
           )
         })}
       </div>

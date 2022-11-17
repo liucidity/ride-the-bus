@@ -5,22 +5,26 @@ export const useApplicationData = () => {
 
   const NEW_DECK = 'NEW_DECK';
   const DRAW = "DRAW";
-  const ROUND = "ROUND"
+  const ROUND = "ROUND";
+  const FACES = "FACES";
 
   const reducer = (state, action) => {
     const reducers = {
       ROUND: state => ({ ...state, round: action.round }),
       NEW_DECK: state => ({ ...state, deck: action.deck }),
       DRAW: state => ({ ...state, card: action.card }),
+      FACES: state => ({ ...state, faces: action.faces})
     }
     return reducers[action.type](state) || reducers.default();
   }
 
   const [state, dispatch] = useReducer(reducer, {
     round: 1,
+    faces: [],
     deck: {},
     card: {}
   })
+
   const gameRound = (action) => {
     if (action === 'nextRound') {
       dispatch({
@@ -51,24 +55,41 @@ export const useApplicationData = () => {
     }
   }
 
+  const resetFaces = () => {
+    dispatch({
+      type: FACES,
+      faces: [],
+    })
+    console.log('tried to reset faces...', state.faces)
+  }
+
   const handleGuess = (choice) => {
+    console.log('state after button press', state);
     let round = state.round
     let card = state.card
+    let faces = state.faces
     switch (round) {
       case 1:
-        if (choice === 'Red' && (card[0].code.includes("H") || card[0].code.includes("D"))) {
+        if (choice === 'Red' && (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")) {
           console.log(round)
           console.log(choice)
           console.log(card[0].code)
+          faces[round - 1] = true
           gameRound('nextRound')
-        } else if (choice === 'Black' && (card[0].code.includes("C") || state.card.code.includes("S"))) {
+        } else if (choice === 'Black' && (card[0].suit === "CLUBS" || card[0].suit === "SPADES")) {
           console.log(round)
           console.log(choice)
           console.log(card[0].code)
+          faces[round - 1] = true
           gameRound('nextRound')
         } else {
-          // updateDeck('new')
-          gameRound('reset')
+          faces[round - 1] = true
+          setTimeout(() => {
+            resetFaces()
+            updateDeck('new')
+            updateDeck('draw')
+            gameRound('reset')
+          }, 5000);
         }
         break;
       case 2:
@@ -76,16 +97,23 @@ export const useApplicationData = () => {
           console.log(round)
           console.log(choice)
           console.log(card[1].code)
+          faces[round - 1] = true
           gameRound('nextRound')
         }
         else if (choice === 'Lower' && (card[1].code[0] < card[0].code[0])) {
           console.log(round)
           console.log(choice)
           console.log(card[1].code)
+          faces[round - 1] = true
           gameRound('nextRound')
         } else {
-          // updateDeck('new')
-          gameRound('reset')
+          faces[round - 1] = true
+          setTimeout(() => {
+            resetFaces()
+            updateDeck('new')
+            updateDeck('draw')
+            gameRound('reset')
+          }, 5000);
         }
         break;
       case 3:
