@@ -8,7 +8,7 @@ type Props ={
 export default function Card({value, image}: Props) {
   return (
 
-    <img alt={value} src={image}/>
+    <img alt={value} src={image} className='m-4'/>
 
 
 
