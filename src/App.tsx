@@ -9,13 +9,23 @@ function App() {
   const {
         state,
         updateDeck,
+        gameRound,
+        handleGuess,
+        handleOptions,
       } = useApplicationData();
+
+  let option1 = handleOptions()[0];
+  let option2 = handleOptions()[1];
+
   return (
     <div className="flex flex-col items-center py-10">
       <div className="App">
        <div>
          {state.deck && state.deck.deck_id}
-         <button onClick={() => updateDeck('new')}>New Deck</button>
+         <button onClick={() => {
+           updateDeck('new')
+           gameRound('reset')
+           }}>New Deck</button>
        </div>
        <div>
          {state.card && state.card.code}
@@ -38,41 +48,19 @@ function App() {
         <Timer isActive={true} duration={20}/>
       </div>
       <div className='flex flex-row justify-center'>
-      <Button option={'Higher'}/>
-      <Button option={'Lower'}/>
+        {/* 
+        0. determine which round, assign button texts
+        1. lock in choice
+        2. compare choice with card result after timer ends
+        3. if wrong restart from round 1
+        4. if correct move to next round
+        */}
+      <Button option={option1} handleGuess={handleGuess} />
+      <Button option={option2} handleGuess={handleGuess}/>
       </div>
     </div>
   );
 }
 
-// import './index.css';
-// import { useApplicationData } from './helpers/useApplicationData';
-
-// function App() {
-
-//   const {
-//     state,
-//     updateDeck,
-//   } = useApplicationData();
-
-//   return (
-//     <div className="App">
-//       <h1 className="text-3xl font-bold underline">
-//         Hello world!
-//       </h1>
-//       <div>
-//         {state.deck && state.deck.deck_id}
-//         <button onClick={() => updateDeck('new')}>New Deck</button>
-//       </div>
-//       <div>
-//         {state.card && state.card.code}
-//         {state.card && <img alt='card' src={state.card.image}></img>}
-//         <button onClick={() => updateDeck('draw')}>Draw Card</button>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
 
 export default App;
