@@ -14,8 +14,8 @@ export const useApplicationData = () => {
       ROUND: state => ({ ...state, round: action.round }),
       NEW_DECK: state => ({ ...state, deck: action.deck }),
       DRAW: state => ({ ...state, card: action.card }),
-      EMPTY_FACES: state => ({ ...state, faces: action.faces}),
-      ADD_FACES: state => ({ ...state, faces: [...state.faces, action.faces]})
+      EMPTY_FACES: state => ({ ...state, faces: action.faces }),
+      ADD_FACES: state => ({ ...state, faces: [...state.faces, action.faces] })
     }
     return reducers[action.type](state) || reducers.default();
   }
@@ -77,6 +77,8 @@ export const useApplicationData = () => {
     let round = state.round
     let card = state.card
     let faces = state.faces
+
+
     switch (round) {
       case 1:
         if (choice === 'Red' && (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")) {
@@ -104,21 +106,27 @@ export const useApplicationData = () => {
         }
         break;
       case 2:
-        if (choice === "Higher" && (card[1].code[0] > card[0].code[0])) {
+        if (choice === "Higher" && (parseInt(card[1].value) > parseInt(card[0].value))) {
           console.log(round)
           console.log(choice)
-          console.log(card[1].code)
+          console.log(parseInt(card[1].value), '>', parseInt(card[0].value))
+          console.log(parseInt(card[1].value) > parseInt(card[0].value))
           handleFaces('add')
           gameRound('nextRound')
         }
-        else if (choice === 'Lower' && (card[1].code[0] < card[0].code[0])) {
+        else if (choice === 'Lower' && (parseInt(card[1].value) < parseInt(card[0].value))) {
           console.log(round)
           console.log(choice)
-          console.log(card[1].code)
+          console.log(parseInt(card[1].value), '>', parseInt(card[0].value))
+          console.log(parseInt(card[1].value) > parseInt(card[0].value))
           handleFaces('add')
           gameRound('nextRound')
         } else {
-          faces.push(true)
+          handleFaces('add')
+          console.log(round)
+          console.log(choice)
+          console.log(parseInt(card[1].value), '>', parseInt(card[0].value))
+          console.log(parseInt(card[1].value) > parseInt(card[0].value))
           setTimeout(() => {
             handleFaces('empty')
             updateDeck('new')
@@ -155,6 +163,13 @@ export const useApplicationData = () => {
         .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`)
         .then(res => {
           console.log(res.data.cards)
+          res.data.cards.map((card) => {
+            if (card.value === "ACE") card.value = "14"
+            if (card.value === "KING") card.value = "13"
+            if (card.value === "QUEEN") card.value = "12"
+            if (card.value === "JACK") card.value = "11"
+            return card.value
+          })
           dispatch({
             type: DRAW,
             card: res.data.cards,
