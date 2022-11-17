@@ -51,7 +51,7 @@ function App() {
           return (
             <ReactCardFlip isFlipped={state.faces[index]} flipDirection="horizontal" >
               <Card value='card-back' image='blue-card-back.png'/>
-              <Card  value={card.code} image={card.image}/>
+              <Card value={card.code} image={card.image}/>
             </ReactCardFlip>
           )
         })}
