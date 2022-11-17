@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
+import classNames from 'classnames'
 
 type Props= {
   isActive: boolean,
@@ -8,25 +9,29 @@ type Props= {
 
 export default function Timer({isActive, duration}:Props) {
   const [counter, setCounter] = useState(duration);
-
+  let timerTextColor = counter > 5 ? "text-white" : "text-red-900"
   useEffect(()=>{
+    
     const timer = 
     counter > 0 && setInterval(() => setCounter(prev => prev - 1),1000);
-    // console.log(counter)
+    
     return () => clearInterval(timer as any)
   },[counter])
 
 
-  const timeLeft = ()=> {
-    
-  }
+  // const timeLeft = (counter)=> {
+  //   // if counter > 5 {}
+  // }
   return (
-    <>
+    <div className="h-20">
     {isActive &&
-      <span className="text-white text-6xl animate-[pulse_1s_infinite]">
+      <p className={classNames(`${timerTextColor} text-7xl animate-ping`, {
+        "hidden": !isActive
+         || counter === 0,
+      })}>
       {counter}
-      </span>
+      </p>
     }
-    </>
+    </div>
   )
 }
