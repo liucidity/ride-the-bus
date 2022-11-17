@@ -88,7 +88,7 @@ export const useApplicationData = () => {
           type: STATUS,
           status: 'none',
         })
-      }, 4000);
+      }, 2500);
     }
     if (action === 'incorrect') {
       dispatch({
@@ -100,7 +100,7 @@ export const useApplicationData = () => {
           type: STATUS,
           status: 'none'
         })
-      }, 4000);
+      }, 2500);
     }
     if (action === 'reset') {
       dispatch({
@@ -131,7 +131,7 @@ export const useApplicationData = () => {
             updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
-          }, 4000);
+          }, 2500);
         }
         break;
       case 2:
@@ -164,7 +164,7 @@ export const useApplicationData = () => {
             updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
-          }, 4000);
+          }, 2500);
         }
         break;
       case 3:

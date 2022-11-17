@@ -49,7 +49,7 @@ function App() {
         
         state.card.map((card:any, index:number, isFlipped:boolean) => {
           return (
-            <ReactCardFlip isFlipped={state.faces[index]} flipDirection="horizontal">
+            <ReactCardFlip isFlipped={state.faces[index]} flipDirection="horizontal" >
               <Card value='card-back' image='blue-card-back.png'/>
               <Card  value={card.code} image={card.image}/>
             </ReactCardFlip>
