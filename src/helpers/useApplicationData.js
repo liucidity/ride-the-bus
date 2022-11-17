@@ -52,26 +52,40 @@ export const useApplicationData = () => {
   }
 
   const handleGuess = (choice) => {
-    switch (state.round) {
+    let round = state.round
+    let card = state.card
+    switch (round) {
       case 1:
-        if (choice === 'Red' && (state.card.code.includes("H") || state.card.code.includes("D"))) {
-          console.log(state.round)
+        if (choice === 'Red' && (card[0].code.includes("H") || card[0].code.includes("D"))) {
+          console.log(round)
           console.log(choice)
-          console.log(state.card.code)
+          console.log(card[0].code)
           gameRound('nextRound')
-        } else if (choice === 'Black' && (state.card.code.includes("C") || state.card.code.includes("S"))) {
-          console.log(state.round)
+        } else if (choice === 'Black' && (card[0].code.includes("C") || state.card.code.includes("S"))) {
+          console.log(round)
           console.log(choice)
-          console.log(state.card.code)
+          console.log(card[0].code)
           gameRound('nextRound')
         } else {
-          updateDeck('new')
+          // updateDeck('new')
           gameRound('reset')
         }
         break;
       case 2:
-        if (choice === "Higher") {
-
+        if (choice === "Higher" && (card[1].code[0] > card[0].code[0])) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[1].code)
+          gameRound('nextRound')
+        }
+        else if (choice === 'Lower' && (card[1].code[0] < card[0].code[0])) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[1].code)
+          gameRound('nextRound')
+        } else {
+          // updateDeck('new')
+          gameRound('reset')
         }
         break;
       case 3:
@@ -99,12 +113,12 @@ export const useApplicationData = () => {
     }
     if (action === 'draw') {
       return axios
-        .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=1`)
+        .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`)
         .then(res => {
           console.log(res.data.cards)
           dispatch({
             type: DRAW,
-            card: res.data.cards[0],
+            card: res.data.cards,
           })
         })
         .catch(err => {
