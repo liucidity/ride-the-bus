@@ -1,4 +1,5 @@
 import axios from "axios";
+import { defaultMaxListeners } from "events";
 import { useReducer, useState } from "react";
 
 export const useApplicationData = () => {
@@ -8,6 +9,7 @@ export const useApplicationData = () => {
   const ROUND = "ROUND";
   const EMPTY_FACES = "EMPTY_FACES";
   const ADD_FACES = "ADD_FACES";
+  const STATUS = 'STATUS'
 
   const reducer = (state, action) => {
     const reducers = {
@@ -15,7 +17,8 @@ export const useApplicationData = () => {
       NEW_DECK: state => ({ ...state, deck: action.deck }),
       DRAW: state => ({ ...state, card: action.card }),
       EMPTY_FACES: state => ({ ...state, faces: action.faces}),
-      ADD_FACES: state => ({ ...state, faces: [...state.faces, action.faces]})
+      ADD_FACES: state => ({ ...state, faces: [...state.faces, action.faces]}),
+      STATUS: state => ({ ...state, status: action.status})
     }
     return reducers[action.type](state) || reducers.default();
   }
@@ -24,7 +27,8 @@ export const useApplicationData = () => {
     round: 1,
     faces: [],
     deck: {},
-    card: {}
+    card: {},
+    status: "none"
   })
 
   const gameRound = (action) => {
@@ -73,58 +77,82 @@ export const useApplicationData = () => {
     }
   }
 
+  const handleStatus = (action) => {
+    if (action === 'correct') {
+      dispatch({
+        type: STATUS,
+        status: 'correct',
+      })
+      setTimeout(() => {
+        dispatch({
+          type: STATUS,
+          status: 'none',
+        })
+      }, 4000);
+    }
+    if (action === 'incorrect') {
+      dispatch({
+        type: STATUS,
+        status: 'incorrect',
+      })
+      setTimeout(() => {
+        dispatch({
+          type: STATUS,
+          status: 'none'
+        })
+      }, 4000);
+    }
+    if (action === 'reset') {
+      dispatch({
+        type: STATUS,
+        action: 'none'
+      })
+    }
+  }
+
   const handleGuess = (choice) => {
     let round = state.round
     let card = state.card
-    let faces = state.faces
     switch (round) {
       case 1:
         if (choice === 'Red' && (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")) {
-          console.log(round)
-          console.log(choice)
-          console.log(card[0].code)
           handleFaces('add')
-          console.log('state after button press', state);
+          handleStatus('correct')
           gameRound('nextRound')
         } else if (choice === 'Black' && (card[0].suit === "CLUBS" || card[0].suit === "SPADES")) {
-          console.log(round)
-          console.log(choice)
-          console.log(card[0].code)
           handleFaces('add')
-          console.log('state after button press', state);
+          handleStatus('correct')
           gameRound('nextRound')
         } else {
           handleFaces('add')
+          handleStatus('incorrect')
           setTimeout(() => {
             handleFaces('empty')
             updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
-          }, 2000);
+          }, 4000);
         }
         break;
       case 2:
         if (choice === "Higher" && (card[1].code[0] > card[0].code[0])) {
-          console.log(round)
-          console.log(choice)
-          console.log(card[1].code)
           handleFaces('add')
+          handleStatus('correct')
           gameRound('nextRound')
         }
         else if (choice === 'Lower' && (card[1].code[0] < card[0].code[0])) {
-          console.log(round)
-          console.log(choice)
-          console.log(card[1].code)
           handleFaces('add')
+          handleStatus('correct')
           gameRound('nextRound')
         } else {
-          faces.push(true)
+          handleFaces('add')
+          handleStatus('incorrect')
           setTimeout(() => {
             handleFaces('empty')
             updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
-          }, 2000);
+          }, 4000);
         }
         break;
       case 3:
@@ -171,6 +199,7 @@ export const useApplicationData = () => {
     state,
     gameRound,
     handleGuess,
-    handleOptions
+    handleOptions,
+    handleStatus
   }
 }

@@ -1,7 +1,8 @@
 import './index.css';
+import { useApplicationData } from './helpers/useApplicationData';
 import Button from './components/Button';
 import Timer from './components/Timer';
-import { useApplicationData } from './helpers/useApplicationData';
+import Message from './components/Message';
 import Card from './components/Card';
 import ReactCardFlip from 'react-card-flip';
 import { useEffect } from 'react';
@@ -34,15 +35,13 @@ function App() {
            }}>New Deck</button>
        </div>
        <div>
-         {state.card && state.card.code}
-         {state.card && <img alt='card' src={state.card.image}></img>}
-         <button onClick={() => updateDeck('draw')}>Draw Card</button>
        </div>
      </div>
       <h1 className="text-2xl font-bold text-white">
         Bus Riders
       </h1>
       
+         <button onClick={() => updateDeck('draw')}>Draw Card</button>
       <div className='flex flex-row'>
         {state.card[0] &&
         
@@ -67,9 +66,11 @@ function App() {
         3. if wrong restart from round 1
         4. if correct move to next round
         */}
-      <Button option={option1} handleGuess={handleGuess} />
-      <Button option={option2} handleGuess={handleGuess} />
+      <Button option={option1} handleGuess={handleGuess} status={state.status}/>
+      <Button option={option2} handleGuess={handleGuess} status={state.status}/>
       </div>
+      {state.status === "correct" && <Message status={"correct"} />}
+      {state.status === "incorrect" && <Message status={"incorrect"} />}
     </div>
   );
 }
