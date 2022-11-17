@@ -106,27 +106,27 @@ export const useApplicationData = () => {
         }
         break;
       case 2:
-        if (choice === "Higher" && (parseInt(card[1].value) > parseInt(card[0].value))) {
+        if (choice === "Higher" && ((card[1].value) > (card[0].value))) {
           console.log(round)
           console.log(choice)
-          console.log(parseInt(card[1].value), '>', parseInt(card[0].value))
-          console.log(parseInt(card[1].value) > parseInt(card[0].value))
+          console.log((card[1].value), '>', (card[0].value))
+          console.log((card[1].value) > (card[0].value))
           handleFaces('add')
           gameRound('nextRound')
         }
-        else if (choice === 'Lower' && (parseInt(card[1].value) < parseInt(card[0].value))) {
+        else if (choice === 'Lower' && ((card[1].value) < (card[0].value))) {
           console.log(round)
           console.log(choice)
-          console.log(parseInt(card[1].value), '>', parseInt(card[0].value))
-          console.log(parseInt(card[1].value) > parseInt(card[0].value))
+          console.log((card[1].value), '>', (card[0].value))
+          console.log((card[1].value) > (card[0].value))
           handleFaces('add')
           gameRound('nextRound')
         } else {
           handleFaces('add')
           console.log(round)
           console.log(choice)
-          console.log(parseInt(card[1].value), '>', parseInt(card[0].value))
-          console.log(parseInt(card[1].value) > parseInt(card[0].value))
+          console.log((card[1].value), '>', (card[0].value))
+          console.log((card[1].value) > (card[0].value))
           setTimeout(() => {
             handleFaces('empty')
             updateDeck('new')
@@ -136,6 +136,36 @@ export const useApplicationData = () => {
         }
         break;
       case 3:
+        let high = Math.max(card[0].value, card[1].value)
+        let low = Math.min(card[0].value, card[1].value)
+        if (choice === "Inside" && (card[2].value < high && card[2].value > low)) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[2].value)
+          console.log(high, low)
+          handleFaces('add')
+          gameRound('nextRound')
+        }
+        else if (choice === 'Outside' && ((card[2].value) > high || (card[2].value) < low)) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[2].value)
+          console.log(high, low)
+          handleFaces('add')
+          gameRound('nextRound')
+        } else {
+          handleFaces('add')
+          console.log(round)
+          console.log(choice)
+          console.log(card[2].value)
+          console.log(high, low)
+          setTimeout(() => {
+            handleFaces('empty')
+            updateDeck('new')
+            updateDeck('draw')
+            gameRound('reset')
+          }, 2000);
+        }
         break;
       default:
     }
@@ -168,7 +198,7 @@ export const useApplicationData = () => {
             if (card.value === "KING") card.value = "13"
             if (card.value === "QUEEN") card.value = "12"
             if (card.value === "JACK") card.value = "11"
-            return card.value
+            return card.value = parseInt(card.value)
           })
           dispatch({
             type: DRAW,
