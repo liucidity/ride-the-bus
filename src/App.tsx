@@ -4,6 +4,7 @@ import Timer from './components/Timer';
 import { useApplicationData } from './helpers/useApplicationData';
 import Card from './components/Card';
 import ReactCardFlip from 'react-card-flip';
+import { useEffect } from 'react';
 
 
 function App() {
@@ -17,6 +18,10 @@ function App() {
 
   const option1 = handleOptions()[0];
   const option2 = handleOptions()[1];
+
+  useEffect(() => {
+    updateDeck('new')
+  }, [])
 
   return (
     <div className="flex flex-col items-center py-10">
@@ -43,7 +48,7 @@ function App() {
         
         state.card.map((card:any, index:number, isFlipped:boolean) => {
           return (
-            <ReactCardFlip isFlipped={state.round-2>=index} flipDirection="horizontal">
+            <ReactCardFlip isFlipped={state.faces[index]} flipDirection="horizontal">
               <Card value='card-back' image='blue-card-back.png'/>
               <Card  value={card.code} image={card.image}/>
             </ReactCardFlip>
