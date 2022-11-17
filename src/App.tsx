@@ -18,6 +18,8 @@ function App() {
 
   const option1 = handleOptions()[0];
   const option2 = handleOptions()[1];
+  const option3 = handleOptions()[2];
+  const option4 = handleOptions()[3];
 
   useEffect(() => {
     updateDeck('new')
@@ -69,6 +71,8 @@ function App() {
         */}
       <Button option={option1} handleGuess={handleGuess} />
       <Button option={option2} handleGuess={handleGuess} />
+      {state.round===4 && <Button option={option3} handleGuess={handleGuess} />}
+      {state.round===4 && <Button option={option4} handleGuess={handleGuess} />}
       </div>
     </div>
   );

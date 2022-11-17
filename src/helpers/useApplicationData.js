@@ -167,7 +167,48 @@ export const useApplicationData = () => {
           }, 2000);
         }
         break;
+      case 4:
+        if (choice === 'Diamond' && (card[3].suit === "DIAMONDS")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        } else if (choice === 'Club' && (card[3].suit === "CLUBS")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        } else if (choice === 'Heart' && (card[3].suit === "HEARTS")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        } else if (choice === 'Spade' && (card[3].suit === "SPADES")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        }
+        else {
+          handleFaces('add')
+          setTimeout(() => {
+            handleFaces('empty')
+            updateDeck('new')
+            updateDeck('draw')
+            gameRound('reset')
+          }, 2000);
+        }
+        break;
       default:
+
     }
   }
 
