@@ -154,6 +154,7 @@ export const useApplicationData = () => {
           gameRound('nextRound')
         } else {
           handleFaces('add')
+          handleStatus('incorrect')
           console.log(round)
           console.log(choice)
           console.log((card[1].value), '>', (card[0].value))
@@ -175,6 +176,7 @@ export const useApplicationData = () => {
           console.log(card[2].value)
           console.log(high, low)
           handleFaces('add')
+          handleStatus('correct')
           gameRound('nextRound')
         }
         else if (choice === 'Outside' && ((card[2].value) > high || (card[2].value) < low)) {
@@ -183,9 +185,11 @@ export const useApplicationData = () => {
           console.log(card[2].value)
           console.log(high, low)
           handleFaces('add')
+          handleStatus('correct')
           gameRound('nextRound')
         } else {
           handleFaces('add')
+          handleStatus('incorrect')
           console.log(round)
           console.log(choice)
           console.log(card[2].value)
@@ -204,6 +208,7 @@ export const useApplicationData = () => {
           console.log(choice)
           console.log(card[3].code)
           handleFaces('add')
+          handleStatus('correct')
           console.log('state after button press', state);
           gameRound('nextRound')
         } else if (choice === 'Club' && (card[3].suit === "CLUBS")) {
@@ -211,6 +216,7 @@ export const useApplicationData = () => {
           console.log(choice)
           console.log(card[3].code)
           handleFaces('add')
+          handleStatus('correct')
           console.log('state after button press', state);
           gameRound('nextRound')
         } else if (choice === 'Heart' && (card[3].suit === "HEARTS")) {
@@ -218,6 +224,7 @@ export const useApplicationData = () => {
           console.log(choice)
           console.log(card[3].code)
           handleFaces('add')
+          handleStatus('correct')
           console.log('state after button press', state);
           gameRound('nextRound')
         } else if (choice === 'Spade' && (card[3].suit === "SPADES")) {
@@ -225,11 +232,13 @@ export const useApplicationData = () => {
           console.log(choice)
           console.log(card[3].code)
           handleFaces('add')
+          handleStatus('correct')
           console.log('state after button press', state);
           gameRound('nextRound')
         }
         else {
           handleFaces('add')
+          handleStatus('incorrect')
           setTimeout(() => {
             handleFaces('empty')
             updateDeck('new')

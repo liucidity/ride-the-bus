@@ -70,8 +70,8 @@ function App() {
         */}
       <Button option={option1} handleGuess={handleGuess} status={state.status}/>
       <Button option={option2} handleGuess={handleGuess} status={state.status}/>
-      {state.round===4 && <Button option={option3} handleGuess={handleGuess} />}
-      {state.round===4 && <Button option={option4} handleGuess={handleGuess} />}
+      {state.round===4 && <Button option={option3} handleGuess={handleGuess} status={state.status}/>}
+      {state.round===4 && <Button option={option4} handleGuess={handleGuess} status={state.status}/>}
       </div>
       {state.status === "correct" && <Message status={"correct"} />}
       {state.status === "incorrect" && <Message status={"incorrect"} />}
