@@ -3,6 +3,7 @@ import Button from './components/Button';
 import Timer from './components/Timer';
 import { useApplicationData } from './helpers/useApplicationData';
 import Card from './components/Card';
+import ReactCardFlip from 'react-card-flip';
 
 
 function App() {
@@ -40,9 +41,12 @@ function App() {
       <div className='flex flex-row'>
         {state.card[0] &&
         
-        state.card.map((card:any, index:number) => {
+        state.card.map((card:any, index:number, isFlipped:boolean) => {
           return (
-            <Card value={card.code} image={card.image} face={(state.round-2) >= index}/>
+            <ReactCardFlip isFlipped={state.round-2>=index} flipDirection="horizontal">
+              <Card value='card-back' image='blue-card-back.png'/>
+              <Card  value={card.code} image={card.image}/>
+            </ReactCardFlip>
           )
         })}
       </div>
