@@ -135,18 +135,29 @@ export const useApplicationData = () => {
         }
         break;
       case 2:
-        if (choice === "Higher" && (card[1].code[0] > card[0].code[0])) {
+        if (choice === "Higher" && ((card[1].value) > (card[0].value))) {
+          console.log(round)
+          console.log(choice)
+          console.log((card[1].value), '>', (card[0].value))
+          console.log((card[1].value) > (card[0].value))
           handleFaces('add')
           handleStatus('correct')
           gameRound('nextRound')
         }
-        else if (choice === 'Lower' && (card[1].code[0] < card[0].code[0])) {
+        else if (choice === 'Lower' && ((card[1].value) < (card[0].value))) {
+          console.log(round)
+          console.log(choice)
+          console.log((card[1].value), '>', (card[0].value))
+          console.log((card[1].value) > (card[0].value))
           handleFaces('add')
           handleStatus('correct')
           gameRound('nextRound')
         } else {
           handleFaces('add')
-          handleStatus('incorrect')
+          console.log(round)
+          console.log(choice)
+          console.log((card[1].value), '>', (card[0].value))
+          console.log((card[1].value) > (card[0].value))
           setTimeout(() => {
             handleFaces('empty')
             updateDeck('new')
@@ -156,8 +167,79 @@ export const useApplicationData = () => {
         }
         break;
       case 3:
+        let high = Math.max(card[0].value, card[1].value)
+        let low = Math.min(card[0].value, card[1].value)
+        if (choice === "Inside" && (card[2].value < high && card[2].value > low)) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[2].value)
+          console.log(high, low)
+          handleFaces('add')
+          gameRound('nextRound')
+        }
+        else if (choice === 'Outside' && ((card[2].value) > high || (card[2].value) < low)) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[2].value)
+          console.log(high, low)
+          handleFaces('add')
+          gameRound('nextRound')
+        } else {
+          handleFaces('add')
+          console.log(round)
+          console.log(choice)
+          console.log(card[2].value)
+          console.log(high, low)
+          setTimeout(() => {
+            handleFaces('empty')
+            updateDeck('new')
+            updateDeck('draw')
+            gameRound('reset')
+          }, 2000);
+        }
+        break;
+      case 4:
+        if (choice === 'Diamond' && (card[3].suit === "DIAMONDS")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        } else if (choice === 'Club' && (card[3].suit === "CLUBS")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        } else if (choice === 'Heart' && (card[3].suit === "HEARTS")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        } else if (choice === 'Spade' && (card[3].suit === "SPADES")) {
+          console.log(round)
+          console.log(choice)
+          console.log(card[3].code)
+          handleFaces('add')
+          console.log('state after button press', state);
+          gameRound('nextRound')
+        }
+        else {
+          handleFaces('add')
+          setTimeout(() => {
+            handleFaces('empty')
+            updateDeck('new')
+            updateDeck('draw')
+            gameRound('reset')
+          }, 2000);
+        }
         break;
       default:
+
     }
   }
 
@@ -183,6 +265,13 @@ export const useApplicationData = () => {
         .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`)
         .then(res => {
           console.log(res.data.cards)
+          res.data.cards.map((card) => {
+            if (card.value === "ACE") card.value = "14"
+            if (card.value === "KING") card.value = "13"
+            if (card.value === "QUEEN") card.value = "12"
+            if (card.value === "JACK") card.value = "11"
+            return card.value = parseInt(card.value)
+          })
           dispatch({
             type: DRAW,
             card: res.data.cards,
