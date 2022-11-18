@@ -5,7 +5,9 @@ import Timer from './components/Timer';
 import Message from './components/Message';
 import Card from './components/Card';
 import ReactCardFlip from 'react-card-flip';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { callbackify } from 'util';
+import {io} from 'socket.io-client'
 
 
 function App() {
@@ -22,7 +24,17 @@ function App() {
   const option3 = handleOptions()[2];
   const option4 = handleOptions()[3];
 
+  const [time, setTime] = useState('fetching') 
+
   useEffect(() => {
+    const socket = io('http://localhost:3001')    
+    socket.on('connect', ()=>console.log(socket.id))
+    socket.on('connect_error', ()=>{
+      setTimeout(()=>socket.connect()
+      ,5000)
+    })   
+    socket.on('time', (data)=>setTime(data))
+    socket.on('disconnect',()=>setTime('server disconnected'))
     updateDeck('new')
   }, [])
 
@@ -55,7 +67,7 @@ function App() {
           return (
             <ReactCardFlip isFlipped={state.faces[index]} flipDirection="horizontal" >
               <Card value='card-back' image='blue-card-back.png'/>
-              <Card  value={card.code} image={card.image}/>
+              <Card value={card.code} image={card.image}/>
             </ReactCardFlip>
           )
         })}
@@ -77,7 +89,7 @@ function App() {
       {state.round===4 && <Button option={option3} handleGuess={handleGuess} status={state.status}/>}
       {state.round===4 && <Button option={option4} handleGuess={handleGuess} status={state.status}/>}
       </div>}
-      
+      {time}
     </div>
   );
 }
