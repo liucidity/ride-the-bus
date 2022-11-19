@@ -25,6 +25,7 @@ function App() {
   const option4 = handleOptions()[3];
 
   const [time, setTime] = useState('fetching') 
+  
 
   useEffect(() => {
     const socket = io('http://localhost:3001')    
@@ -77,6 +78,10 @@ function App() {
         {/* <Timer isActive={true} duration={20}/> */}
       </div>
       <div className='h-20'>
+      {state.card[0] && <p className='h-10 text-3xl text-white'>
+
+        {state.deck.remaining} cards remaining
+      </p>}
 
       {state.status === "correct" && <Message status={"correct"} />}
       {state.status === "incorrect" && <Message status={"incorrect"} />}
@@ -90,6 +95,7 @@ function App() {
       {state.round===4 && <Button option={option4} handleGuess={handleGuess} status={state.status}/>}
       </div>}
       {time}
+      
     </div>
   );
 }

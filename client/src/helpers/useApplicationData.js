@@ -15,10 +15,10 @@ export const useApplicationData = () => {
     const reducers = {
       ROUND: state => ({ ...state, round: action.round }),
       NEW_DECK: state => ({ ...state, deck: action.deck }),
-      DRAW: state => ({ ...state, card: action.card }),
-      EMPTY_FACES: state => ({ ...state, faces: action.faces}),
-      ADD_FACES: state => ({ ...state, faces: [...state.faces, action.faces]}),
-      STATUS: state => ({ ...state, status: action.status})
+      DRAW: state => ({ ...state, card: action.card, deck: { ...state.deck, remaining: action.deck } }),
+      EMPTY_FACES: state => ({ ...state, faces: action.faces }),
+      ADD_FACES: state => ({ ...state, faces: [...state.faces, action.faces] }),
+      STATUS: state => ({ ...state, status: action.status })
     }
     return reducers[action.type](state) || reducers.default();
   }
@@ -128,7 +128,7 @@ export const useApplicationData = () => {
           handleStatus('incorrect')
           setTimeout(() => {
             handleFaces('empty')
-            updateDeck('new')
+            // updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
           }, 2500);
@@ -161,7 +161,7 @@ export const useApplicationData = () => {
           console.log((card[1].value) > (card[0].value))
           setTimeout(() => {
             handleFaces('empty')
-            updateDeck('new')
+            // updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
           }, 2500);
@@ -196,7 +196,7 @@ export const useApplicationData = () => {
           console.log(high, low)
           setTimeout(() => {
             handleFaces('empty')
-            updateDeck('new')
+            // updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
           }, 2000);
@@ -241,7 +241,7 @@ export const useApplicationData = () => {
           handleStatus('incorrect')
           setTimeout(() => {
             handleFaces('empty')
-            updateDeck('new')
+            // updateDeck('new')
             updateDeck('draw')
             gameRound('reset')
           }, 2000);
@@ -273,7 +273,7 @@ export const useApplicationData = () => {
       return axios
         .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`)
         .then(res => {
-          console.log(res.data.cards)
+          console.log(res.data)
           res.data.cards.map((card) => {
             if (card.value === "ACE") card.value = "14"
             if (card.value === "KING") card.value = "13"
@@ -284,10 +284,12 @@ export const useApplicationData = () => {
           dispatch({
             type: DRAW,
             card: res.data.cards,
+            deck: state.deck.remaining = res.data.remaining
           })
         })
         .catch(err => {
           console.log("Error loading: ", err);
+
         })
     }
   }

@@ -16,13 +16,16 @@ export default function Nav() {
           />
         </svg>
         <span className='text-white text-2xl font-bold uppercase tracking-wide'>bus riders</span>
-      {/* <div>
+      <div>
         <ul>
           <li>
-
+            <a className='text-white text-2xl font-bold uppercase tracking-wide' href='/'>Solo</a>
+          </li>
+          <li>
+            <a className='text-white text-2xl font-bold uppercase tracking-wide' href="/party">Party</a>
           </li>
         </ul>
-      </div> */}
+      </div>
       </nav>
   )
 }
