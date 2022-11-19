@@ -23,7 +23,7 @@ const router = createBrowserRouter([
   },
   {
     path:'/party',
-    element:<Party/>
+    element: <Party/>
 }
 ])
 
@@ -32,7 +32,7 @@ ReactDOM.render(
     <Layout>
       <Nav/>
 
-    <RouterProvider router={router}/>
+      <RouterProvider router={router}/>
     </Layout>
   </React.StrictMode>,
   document.getElementById('root')

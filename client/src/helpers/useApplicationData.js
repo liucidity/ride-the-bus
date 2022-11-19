@@ -6,6 +6,7 @@ export const useApplicationData = () => {
 
   const NEW_DECK = 'NEW_DECK';
   const DRAW = "DRAW";
+  const RESHUFFLE = "RESHUFFLE";
   const ROUND = "ROUND";
   const EMPTY_FACES = "EMPTY_FACES";
   const ADD_FACES = "ADD_FACES";
@@ -15,7 +16,8 @@ export const useApplicationData = () => {
     const reducers = {
       ROUND: state => ({ ...state, round: action.round }),
       NEW_DECK: state => ({ ...state, deck: action.deck }),
-      DRAW: state => ({ ...state, card: action.card, deck: { ...state.deck, remaining: action.deck } }),
+      DRAW: state => ({ ...state, card: action.card, deck: { ...state.deck, remaining: action.remaining } }),
+      RESHUFFLE: state => ({ ...state, deck: { ...state.deck, remaining: action.remaining } }),
       EMPTY_FACES: state => ({ ...state, faces: action.faces }),
       ADD_FACES: state => ({ ...state, faces: [...state.faces, action.faces] }),
       STATUS: state => ({ ...state, status: action.status })
@@ -77,6 +79,7 @@ export const useApplicationData = () => {
     }
   }
 
+
   const handleStatus = (action) => {
     if (action === 'correct') {
       dispatch({
@@ -110,9 +113,24 @@ export const useApplicationData = () => {
     }
   }
 
+  const drawOrReshuffle = async () => {
+    console.log('drawOrReshuffling')
+    if (state.deck.remaining < 1) {
+      console.log('old deck', state.deck.deck_id)
+      await updateDeck('reshuffle')
+      await updateDeck('draw')
+    } else {
+
+      updateDeck('draw')
+    }
+
+
+  }
+
   const handleGuess = (choice) => {
     let round = state.round
     let card = state.card
+
     switch (round) {
       case 1:
         if (choice === 'Red' && (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")) {
@@ -128,9 +146,9 @@ export const useApplicationData = () => {
           handleStatus('incorrect')
           setTimeout(() => {
             handleFaces('empty')
-            // updateDeck('new')
-            updateDeck('draw')
             gameRound('reset')
+            drawOrReshuffle()
+
           }, 2500);
         }
         break;
@@ -161,9 +179,8 @@ export const useApplicationData = () => {
           console.log((card[1].value) > (card[0].value))
           setTimeout(() => {
             handleFaces('empty')
-            // updateDeck('new')
-            updateDeck('draw')
             gameRound('reset')
+            drawOrReshuffle()
           }, 2500);
         }
         break;
@@ -196,9 +213,8 @@ export const useApplicationData = () => {
           console.log(high, low)
           setTimeout(() => {
             handleFaces('empty')
-            // updateDeck('new')
-            updateDeck('draw')
             gameRound('reset')
+            drawOrReshuffle()
           }, 2000);
         }
         break;
@@ -241,9 +257,8 @@ export const useApplicationData = () => {
           handleStatus('incorrect')
           setTimeout(() => {
             handleFaces('empty')
-            // updateDeck('new')
-            updateDeck('draw')
             gameRound('reset')
+            drawOrReshuffle()
           }, 2000);
         }
         break;
@@ -254,12 +269,12 @@ export const useApplicationData = () => {
 
 
   const updateDeck = (action) => {
-    console.log(action)
-    console.log(state)
     if (action === 'new') {
       return axios
         .get('https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
         .then(res => {
+          console.log(action)
+          console.log(state)
           dispatch({
             type: NEW_DECK,
             deck: res.data,
@@ -273,7 +288,11 @@ export const useApplicationData = () => {
       return axios
         .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`)
         .then(res => {
+          console.log(action)
+          console.log(state)
+          console.log(res.data.cards)
           console.log(res.data)
+
           res.data.cards.map((card) => {
             if (card.value === "ACE") card.value = "14"
             if (card.value === "KING") card.value = "13"
@@ -284,14 +303,31 @@ export const useApplicationData = () => {
           dispatch({
             type: DRAW,
             card: res.data.cards,
-            deck: state.deck.remaining = res.data.remaining
+            remaining: state.deck.remaining = res.data.remaining
           })
+
         })
         .catch(err => {
           console.log("Error loading: ", err);
 
         })
     }
+    if (action === 'reshuffle') {
+      return axios.get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/shuffle/`)
+        .then(res => {
+          console.log(action)
+          console.log(state)
+          console.log('reshuffle data', res.data)
+          dispatch({
+            type: RESHUFFLE,
+            remaining: res.data.remaining
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+
   }
 
   return {
