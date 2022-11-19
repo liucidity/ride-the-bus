@@ -5,21 +5,18 @@ import { useEffect, useState } from 'react';
 import { callbackify } from 'util';
 import {io} from 'socket.io-client'
 import Game from './components/Game';
+import Controls from './components/Controls'
 
 
-function App() {
+function Solo() {
   const {
         state,
         updateDeck,
-        gameRound,
         handleGuess,
         handleOptions,
       } = useApplicationData();
 
-  const option1 = handleOptions()[0];
-  const option2 = handleOptions()[1];
-  const option3 = handleOptions()[2];
-  const option4 = handleOptions()[3];
+  
 
   // const [time, setTime] = useState('fetching') 
   
@@ -39,13 +36,7 @@ function App() {
   return (
     <div>
       <Game state={state} updateDeck={updateDeck} />
-
-    {state.card[0] && <div className='flex flex-row justify-center'>
-      <Button option={option1} handleGuess={handleGuess} status={state.status}/>
-      <Button option={option2} handleGuess={handleGuess} status={state.status}/>
-      {state.round===4 && <Button option={option3} handleGuess={handleGuess} status={state.status}/>}
-      {state.round===4 && <Button option={option4} handleGuess={handleGuess} status={state.status}/>}
-      </div>}
+      <Controls state={state} handleGuess={handleGuess} handleOptions={handleOptions} />
     </div>
 
       
@@ -53,4 +44,4 @@ function App() {
 }
 
 
-export default App;
+export default Solo;

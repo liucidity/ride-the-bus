@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom'
 
 import './index.css';
-import App from './App';
+import Solo from './Solo';
 import Party from './Party';
 import Layout from './components/Layout';
 
@@ -19,7 +19,7 @@ import Nav from './components/Nav';
 const router = createBrowserRouter([
   {
     path:"/",
-    element: <App/>,
+    element: <Solo/>,
   },
   {
     path:'/party',
