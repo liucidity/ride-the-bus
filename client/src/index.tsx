@@ -1,19 +1,37 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route,
+} from 'react-router-dom'
+
 import './index.css';
-import App from './App';
+import Solo from './Solo';
+import Party from './Party';
 import Layout from './components/Layout';
 
 import reportWebVitals from './reportWebVitals';
 import Nav from './components/Nav';
 
 // const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+const router = createBrowserRouter([
+  {
+    path:"/",
+    element: <Solo/>,
+  },
+  {
+    path:'/party',
+    element: <Party/>
+}
+])
+
 ReactDOM.render(
   <React.StrictMode>
     <Layout>
       <Nav/>
 
-    <App />
+      <RouterProvider router={router}/>
     </Layout>
   </React.StrictMode>,
   document.getElementById('root')
