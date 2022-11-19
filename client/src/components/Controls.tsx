@@ -6,8 +6,6 @@ type Props = {
   handleOptions: any
 }
 
-
-
 export default function Controls({state,handleGuess,handleOptions}:Props) {
   const option1 = handleOptions()[0];
   const option2 = handleOptions()[1];

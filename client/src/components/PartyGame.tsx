@@ -12,7 +12,9 @@ type Props = {
   state: any
   updateDeck: any
 }
-export default function SoloGame({state, updateDeck}:Props) {
+
+
+export default function PartyGame({state, updateDeck}:Props) {
   return (
     <div className="flex flex-col items-center py-10">
    <h1 className="text-2xl font-bold text-white pt-10">
@@ -38,7 +40,7 @@ export default function SoloGame({state, updateDeck}:Props) {
    </div>
 
    <div>
-     {/* <Timer isActive={true} duration={20}/> */}
+     <Timer isActive={true} duration={20}/>
    </div>
    <div>
    {state.card[0] && <p className='h-10 text-3xl text-white'>
