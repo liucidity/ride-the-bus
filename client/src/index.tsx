@@ -11,7 +11,6 @@ import Solo from './Solo';
 import Party from './Party';
 import Layout from './components/Layout';
 
-
 import reportWebVitals from './reportWebVitals';
 import Nav from './components/Nav';
 
