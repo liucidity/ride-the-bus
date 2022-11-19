@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import Layout from './components/Layout';
 
-
 import reportWebVitals from './reportWebVitals';
 import Nav from './components/Nav';
 
