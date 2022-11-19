@@ -9,7 +9,7 @@ import ReactCardFlip from 'react-card-flip';
 // import {io} from 'socket.io-client'
 
 type Props = {
-  state: object
+  state: any
   updateDeck: any
 }
 

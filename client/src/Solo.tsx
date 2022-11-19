@@ -4,7 +4,7 @@ import Button from './components/Button';
 import { useEffect, useState } from 'react';
 import { callbackify } from 'util';
 import {io} from 'socket.io-client'
-import Game from './components/Game';
+import SoloGame from './components/SoloGame';
 import Controls from './components/Controls'
 
 
@@ -35,7 +35,7 @@ function Solo() {
 
   return (
     <div>
-      <Game state={state} updateDeck={updateDeck} />
+      <SoloGame state={state} updateDeck={updateDeck} />
       <Controls state={state} handleGuess={handleGuess} handleOptions={handleOptions} />
     </div>
 
