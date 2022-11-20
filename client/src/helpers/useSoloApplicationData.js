@@ -2,7 +2,7 @@ import axios from "axios";
 import { defaultMaxListeners } from "events";
 import { useReducer, useState } from "react";
 
-export const useApplicationData = () => {
+export const useSoloApplicationData = () => {
 
   const NEW_DECK = 'NEW_DECK';
   const DRAW = "DRAW";
