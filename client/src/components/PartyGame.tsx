@@ -24,6 +24,9 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer}:Pro
     setTimer(10)
   }
 
+  const bluePoints = state.players.blue.points;
+  const redPoints = state.players.red.points;
+
   return (
     <div className="flex flex-col items-center py-10">
    <h1 className="text-2xl font-bold text-white pt-10">
@@ -61,6 +64,12 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer}:Pro
    {state.status === "correct" && <Message status={"correct"} />}
    {state.status === "incorrect" && <Message status={"incorrect"} />}
    {state.status === "none" && state.timer > 0 && <Message status={state.round} />}
+   </div>
+   <div className='h-20'>
+    Blue Player: {bluePoints}
+   </div>
+   <div className='h-20'>
+    Red Player: {redPoints}
    </div>
  </div>
   )
