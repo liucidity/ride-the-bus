@@ -24,6 +24,9 @@ export default function Nav() {
           <li>
             <a className='text-white text-2xl font-bold uppercase tracking-wide' href="/party">Party</a>
           </li>
+          <li>
+            <a className='text-white text-2xl font-bold uppercase tracking-wide' href="/player">Player</a>
+          </li>
         </ul>
       </div>
       </nav>
