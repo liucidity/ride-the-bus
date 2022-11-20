@@ -1,6 +1,7 @@
 import axios from "axios";
 import { defaultMaxListeners } from "events";
 import { useReducer, useState } from "react";
+import compareCardSuits from './suits'
 
 export const usePartyApplicationData = () => {
   const NEW_DECK = "NEW_DECK";
@@ -11,7 +12,8 @@ export const usePartyApplicationData = () => {
   const ADD_FACES = "ADD_FACES";
   const STATUS = "STATUS";
   const SELECTION = "SELECTION";
-  const SET_TIMER = 'SET_TIMER'
+  const SET_TIMER = 'SET_TIMER';
+  const ADD_POINT = 'ADD_POINT';
 
   const reducer = (state, action) => {
     const reducers = {
@@ -36,12 +38,19 @@ export const usePartyApplicationData = () => {
         ...state,
         players: {
           ...state.players,
-          [action.player]: { choice: action.selection },
+          [action.player]: {...state.players[action.player], choice: action.selection },
         },
       }),
       SET_TIMER: (state) => ({
         ...state,
         timer: action.timer
+      }),
+      ADD_POINT: (state) => ({
+        ...state,
+        players: {
+          ...state.players,
+          [action.player]: {...state.players[action.player], points: action.points}
+        }
       })
     };
     return reducers[action.type](state) || reducers.default();
@@ -53,7 +62,7 @@ export const usePartyApplicationData = () => {
     deck: {},
     card: {},
     status: "none",
-    players: { blue: {}, red: {} },
+    players: { blue: {points: 0}, red: {points: 0} },
     timer: -1,
   });
 
@@ -156,6 +165,15 @@ export const usePartyApplicationData = () => {
     console.log("player and choice", state.players);
   };
 
+  const addPoint = (player, amount) => {
+    dispatch({
+      type: ADD_POINT,
+      player: player,
+      points: state.players[player].points += amount
+    })
+  }
+
+
   const handleRound = (players) => {
     console.log('handleRound functioning running!')
     let round = state.round;
@@ -170,11 +188,13 @@ export const usePartyApplicationData = () => {
             (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")
           ) {
             handleStatus("correct");
+            addPoint(player, 1)
           } else if (
             choice === "Black" &&
             (card[0].suit === "CLUBS" || card[0].suit === "SPADES")
           ) {
             handleStatus("correct");
+            addPoint(player, 1)
           } else {
             handleStatus("incorrect");
           }
@@ -182,8 +202,16 @@ export const usePartyApplicationData = () => {
         case 2:
           if (choice === "Higher" && card[1].value > card[0].value) {
             handleStatus("correct");
+            addPoint(player, 1)
           } else if (choice === "Lower" && card[1].value < card[0].value) {
             handleStatus("correct");
+            addPoint(player, 1)
+          } else if (choice === 'Higher' && card[1].value === card[0].value && compareCardSuits(card[1].code, card[0].code)) {
+            handleStatus("correct");
+            addPoint(player, 1)
+          } else if (choice === 'Lower' && card[1].value === card[0].value && !compareCardSuits(card[1].code, card[0].code)) {
+            handleStatus("correct");
+            addPoint(player, 1)
           } else {
             handleStatus("incorrect");
           }
@@ -197,11 +225,13 @@ export const usePartyApplicationData = () => {
             card[2].value > low
           ) {
             handleStatus("correct");
+            addPoint(player, 1)
           } else if (
             choice === "Outside" &&
             (card[2].value > high || card[2].value < low)
           ) {
             handleStatus("correct");
+            addPoint(player, 1)
           } else {
             handleStatus("incorrect");
           }
@@ -209,12 +239,16 @@ export const usePartyApplicationData = () => {
         case 4:
           if (choice === "Diamond" && card[3].suit === "DIAMONDS") {
             handleStatus("correct");
+            addPoint(player, 3)
           } else if (choice === "Club" && card[3].suit === "CLUBS") {
             handleStatus("correct");
+            addPoint(player, 3)
           } else if (choice === "Heart" && card[3].suit === "HEARTS") {
             handleStatus("correct");
+            addPoint(player, 3)
           } else if (choice === "Spade" && card[3].suit === "SPADES") {
             handleStatus("correct");
+            addPoint(player, 3)
           } else {
             handleStatus("incorrect");
           }

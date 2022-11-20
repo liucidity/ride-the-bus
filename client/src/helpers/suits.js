@@ -22,8 +22,11 @@ const indexOfHigherSuit = (suits) => {
 const compareCardSuits = (card1, card2) => {
   const cards = [card1, card2]
   const suits = [card1.slice(1), card2.slice(1)]
-  console.log(suits)
-  return cards[indexOfHigherSuit(suits)]
+  if (card1 === cards[indexOfHigherSuit(suits)]) {
+    return true
+  } else {
+    return false
+  }
 };
 
 export default compareCardSuits
