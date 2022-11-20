@@ -17,15 +17,17 @@ export default function PartyButton({option, handleSelection, player, status, se
   }
 
   let buttonStatus = statusToBoolean(status);
-
+console.log(player)
   return (
 
-    <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={()=> handleSelection(player,option)} disabled={buttonStatus}>
-      {option}
-    </button>
-    // <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={()=> sendPress(option)} disabled={buttonStatus}>
+    // <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={()=> handleSelection(player,option)} disabled={buttonStatus}>
     //   {option}
     // </button>
+    
+
+    <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={()=> sendPress(player, option)} disabled={buttonStatus}>
+      {option}
+    </button>
 
 
   )

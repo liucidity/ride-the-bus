@@ -11,15 +11,12 @@ type Props = {
 
 const socket = io('http://localhost:3001')    
 export default function PartyControls({state,handleSelection,handleOptions, player}:Props) {
-  const [time, setTime] = useState('fetching') 
   useEffect(() => {
     socket.on('connect', ()=> console.log(socket.id))
     socket.on('connect_error', ()=>{
       setTimeout(()=>socket.connect()
       ,5000)
     })   
-    socket.on('time', (data)=>setTime(data))
-    socket.on('disconnect',()=>setTime('server disconnected'))
     return ()=>{
       socket.disconnect()
     }
@@ -27,8 +24,8 @@ export default function PartyControls({state,handleSelection,handleOptions, play
     
   }, [])
   
-  const sendPress = (playerChoice) => {
-    socket.emit(playerChoice)
+  const sendPress = (player,choice) => {
+    socket.emit("buttonPress",player,choice)
   }
   const option1 = handleOptions()[0];
   const option2 = handleOptions()[1];

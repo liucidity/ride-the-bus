@@ -7,22 +7,43 @@ import ReactCardFlip from 'react-card-flip';
 import React, { useEffect, useState } from 'react';
 // import { useEffect, useState } from 'react';
 // import { callbackify } from 'util';
-// import {io} from 'socket.io-client'
+import {io} from 'socket.io-client'
 
 type Props = {
   state: any
   updateDeck: any
   handleRound: any
   setTimer: any
+  handleSelection:any
 }
 
 
-export default function PartyGame({state, updateDeck, handleRound, setTimer}:Props) {
+export default function PartyGame({state, updateDeck, handleRound, setTimer, handleSelection}:Props) {
 
   const startGame = () => {
     updateDeck('draw');
     setTimer(10)
   }
+  const socket = io('http://localhost:3001')   
+  useEffect(() => {
+    socket.on('connect', ()=> console.log(socket.id))
+    socket.on('connect_error', ()=>{
+      setTimeout(()=>socket.connect()
+      ,5000)
+    })
+    
+    socket.on('buttonPress', (player,choice) => {
+      console.log(player,choice)
+      // update player state
+      handleSelection(player,choice)
+    });
+    return ()=>{
+      socket.disconnect()
+    }
+
+    
+  }, [])
+
 
   return (
     <div className="flex flex-col items-center py-10">

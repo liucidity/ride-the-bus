@@ -38,7 +38,7 @@ function Party() {
 
   return (
     <div>
-      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer}/>
+      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection}/>
       <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'blue'} />
       <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'red'} />
     </div>

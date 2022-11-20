@@ -15,19 +15,17 @@ const io = socketIo(server, {
 io.on('connection', (socket) => {
   console.log('client connected: ', socket.id)
 
-  socket.join('clock-room')
+  socket.join('game-room')
 
   socket.on('disconnect', (reason) => {
     console.log(reason)
   })
-  socket.onAny((eventName, ...args) => {
-    console.log(eventName, args)
+  socket.on('buttonPress', (player, choice) => {
+    console.log(player, choice)
+    socket.to('game-room').emit('buttonPress', player, choice)
   });
 })
 
-// setInterval(()=>{
-//    io.to('clock-room').emit('time', new Date())
-// },1000)
 
 
 // This displays message that the server running and listening to specified port
