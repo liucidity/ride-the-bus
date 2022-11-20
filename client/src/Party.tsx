@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { callbackify } from 'util';
 import {io} from 'socket.io-client'
 import PartyGame from './components/PartyGame';
-import Controls from './components/Controls'
+import PartyControls from './components/PartyControls'
 import React from 'react';
 
 
@@ -38,9 +38,9 @@ function Party() {
 
   return (
     <div>
-      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer}/>
-      <Controls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'blue'} />
-      <Controls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'red'} />
+      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection}/>
+      <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'blue'} />
+      <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'red'} />
     </div>
 
       
