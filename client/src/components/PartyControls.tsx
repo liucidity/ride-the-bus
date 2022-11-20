@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react"
 import { io } from "socket.io-client"
-import Button from "./Button"
+import PartyButton from "./PartyButton"
 
 type Props = {
   state: any,
-  handleGuess: any,
-  handleOptions: any
+  handleSelection: any,
+  handleOptions: any,
+  player: string
 }
 
 const socket = io('http://localhost:3001')    
-export default function PartyControls({state,handleGuess,handleOptions}:Props) {
+export default function PartyControls({state,handleSelection,handleOptions, player}:Props) {
   const [time, setTime] = useState('fetching') 
   useEffect(() => {
     socket.on('connect', ()=> console.log(socket.id))
@@ -26,8 +27,8 @@ export default function PartyControls({state,handleGuess,handleOptions}:Props) {
     
   }, [])
   
-  const sendPress = (button) => {
-    socket.emit(button)
+  const sendPress = (playerChoice) => {
+    socket.emit(playerChoice)
   }
   const option1 = handleOptions()[0];
   const option2 = handleOptions()[1];
@@ -35,14 +36,12 @@ export default function PartyControls({state,handleGuess,handleOptions}:Props) {
   const option4 = handleOptions()[3];
   return(
     <>
-    <button onClick={(e)=>sendPress(option1)}>
-      yooo
-    </button>
+
     {<div className='flex flex-row justify-center'>
-      <Button option={option1} handleGuess={handleGuess} status={state.status} sendPress={sendPress}/>
-      <Button option={option2} handleGuess={handleGuess} status={state.status} sendPress={sendPress}/>
-      {state.round===4 && <Button option={option3} handleGuess={handleGuess} status={state.status} sendPress={sendPress}/>}
-      {state.round===4 && <Button option={option4} handleGuess={handleGuess} status={state.status} sendPress={sendPress}/>}
+      <PartyButton option={option1} handleSelection={handleSelection} status={state.status} sendPress={sendPress} player={player}/>
+      <PartyButton option={option2} handleSelection={handleSelection} status={state.status} sendPress={sendPress} player={player}/>
+      {state.round===4 && <PartyButton option={option3} handleSelection={handleSelection} status={state.status} sendPress={sendPress} player={player}/>}
+      {state.round===4 && <PartyButton option={option4} handleSelection={handleSelection} status={state.status} sendPress={sendPress} player={player}/>}
       </div>}
     </>
   )
