@@ -1,20 +1,23 @@
 import './index.css';
-import { useApplicationData } from './helpers/useApplicationData';
+import { usePartyApplicationData } from './helpers/usePartyApplicationData';
 import Button from './components/Button';
 import { useEffect, useState } from 'react';
 import { callbackify } from 'util';
 import {io} from 'socket.io-client'
 import PartyGame from './components/PartyGame';
 import Controls from './components/Controls'
+import React from 'react';
 
 
 function Party() {
   const {
         state,
         updateDeck,
-        handleGuess,
+        handleRound,
         handleOptions,
-      } = useApplicationData();
+        handleSelection,
+        setTimer,
+      } = usePartyApplicationData();
 
   
 
@@ -35,8 +38,9 @@ function Party() {
 
   return (
     <div>
-      <PartyGame state={state} updateDeck={updateDeck} />
-      <Controls state={state} handleGuess={handleGuess} handleOptions={handleOptions} />
+      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer}/>
+      <Controls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'blue'} />
+      <Controls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'red'} />
     </div>
 
       

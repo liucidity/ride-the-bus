@@ -1,5 +1,5 @@
 import './index.css';
-import { useApplicationData } from './helpers/useApplicationData';
+import { useSoloApplicationData } from './helpers/useSoloApplicationData';
 import Button from './components/Button';
 import { useEffect, useState } from 'react';
 import { callbackify } from 'util';
@@ -14,7 +14,7 @@ function Solo() {
         updateDeck,
         handleGuess,
         handleOptions,
-      } = useApplicationData();
+      } = useSoloApplicationData();
 
   
 

@@ -1,9 +1,10 @@
 // import './index.css';
-import { useApplicationData } from '../helpers/useApplicationData';
+import { useApplicationData } from '../helpers/useSoloApplicationData';
 import Timer from './Timer';
 import Message from './Message';
 import Card from './Card';
 import ReactCardFlip from 'react-card-flip';
+import React from 'react';
 // import { useEffect, useState } from 'react';
 // import { callbackify } from 'util';
 // import {io} from 'socket.io-client'
