@@ -6,7 +6,7 @@ const port = process.env.PORT || 3001; //Line 3
 
 const server = http.createServer(app)
 
-const io = socketIo(server,{ 
+const io = socketIo(server, {
   cors: {
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST']
@@ -17,14 +17,17 @@ io.on('connection', (socket) => {
 
   socket.join('clock-room')
 
-  socket.on('disconnect',(reason)=>{
+  socket.on('disconnect', (reason) => {
     console.log(reason)
   })
+  socket.onAny((eventName, ...args) => {
+    console.log(eventName, args)
+  });
 })
 
-setInterval(()=>{
-   io.to('clock-room').emit('time', new Date())
-},1000)
+// setInterval(()=>{
+//    io.to('clock-room').emit('time', new Date())
+// },1000)
 
 
 // This displays message that the server running and listening to specified port

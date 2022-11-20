@@ -9,6 +9,7 @@ import {
 import './index.css';
 import Solo from './Solo';
 import Party from './Party';
+import PlayerClient from './PlayerClient'
 import Layout from './components/Layout';
 
 import reportWebVitals from './reportWebVitals';
@@ -23,7 +24,11 @@ const router = createBrowserRouter([
   {
     path:'/party',
     element: <Party/>
-}
+  }, 
+  {
+    path:'/player',
+    element: <PlayerClient/>
+  }
 ])
 
 ReactDOM.render(

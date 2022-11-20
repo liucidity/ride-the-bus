@@ -2,9 +2,10 @@ type Props={
   option: string,
   handleGuess: any,
   status: string,
+  sendPress: any,
 }
 
-export default function Button({option, handleGuess, status}:Props) {
+export default function Button({option, handleGuess, status, sendPress}:Props) {
 
   const statusToBoolean = (status: string) => {
     if (status === 'correct' || status === 'incorrect') {
@@ -21,6 +22,9 @@ export default function Button({option, handleGuess, status}:Props) {
     <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={()=> handleGuess(option)} disabled={buttonStatus}>
       {option}
     </button>
+    // <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={()=> sendPress(option)} disabled={buttonStatus}>
+    //   {option}
+    // </button>
 
 
   )
