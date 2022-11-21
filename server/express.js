@@ -20,6 +20,10 @@ io.on('connection', (socket) => {
   socket.on('disconnect', (reason) => {
     console.log(reason)
   })
+  socket.on('round', (round) => {
+    console.log(round)
+    socket.to('game-room').emit('round', round)
+  })
   socket.on('buttonPress', (player, choice) => {
     console.log(player, choice)
     socket.to('game-room').emit('buttonPress', player, choice)

@@ -4,10 +4,11 @@ import Timer from './Timer';
 import Message from './Message';
 import Card from './Card';
 import ReactCardFlip from 'react-card-flip';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 // import { useEffect, useState } from 'react';
 // import { callbackify } from 'util';
-import {io} from 'socket.io-client'
+import {io, Socket} from 'socket.io-client'
+
 
 type Props = {
   state: any
@@ -19,30 +20,49 @@ type Props = {
 
 
 export default function PartyGame({state, updateDeck, handleRound, setTimer, handleSelection}:Props) {
+  const socketRef = useRef<Socket>();
 
-  const startGame = () => {
-    updateDeck('draw');
+  const startGame = async() => {
+
+    await updateDeck('draw');
     setTimer(10)
   }
-  const socket = io('http://localhost:3001')   
+  let socket;
+  // let socket = io('http://localhost:3001')
   useEffect(() => {
-    socket.on('connect', ()=> console.log(socket.id))
-    socket.on('connect_error', ()=>{
-      setTimeout(()=>socket.connect()
+    socketRef.current = io('http://localhost:3001')
+    updateDeck('new');
+    socketRef.current.on('connect', ()=> console.log(socketRef.current.id))
+    socketRef.current.on('connect_error', ()=>{
+      setTimeout(()=>socketRef.current.connect()
       ,5000)
     })
+
     
-    socket.on('buttonPress', (player,choice) => {
+    socketRef.current.on('buttonPress', (player,choice) => {
       console.log(player,choice)
       // update player state
       handleSelection(player,choice)
     });
     return ()=>{
-      socket.disconnect()
+      socketRef.current.off('connect')
+      socketRef.current.off('disconnect')
+      socketRef.current.off('buttonPress')
+      socketRef.current.disconnect()
     }
 
     
   }, [])
+
+  useEffect(()=> {
+    console.log(state.round)
+    sendRound(state.round)
+  },[state.round])
+
+  const sendRound=(round) => {
+    // socket = io('http://localhost:3001')
+    socketRef.current.emit("round",round)
+  }
 
 
   const bluePoints = state.players.blue.points;

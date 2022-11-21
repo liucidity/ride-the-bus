@@ -13,7 +13,7 @@ export default function PlayerClient() {
   return(
     <>
     <PartyControls state={state} player={'blue'} handleOptions={handleOptions}/>
-    <PartyControls state={state} player={'red'} handleOptions={handleOptions}/>
+    {/* <PartyControls state={state} player={'red'} handleOptions={handleOptions}/> */}
     </>
   ) 
 }

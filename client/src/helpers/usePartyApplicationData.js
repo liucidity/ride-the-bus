@@ -38,7 +38,7 @@ export const usePartyApplicationData = () => {
         ...state,
         players: {
           ...state.players,
-          [action.player]: {...state.players[action.player], choice: action.selection },
+          [action.player]: { ...state.players[action.player], choice: action.selection },
         },
       }),
       SET_TIMER: (state) => ({
@@ -49,7 +49,7 @@ export const usePartyApplicationData = () => {
         ...state,
         players: {
           ...state.players,
-          [action.player]: {...state.players[action.player], points: action.points}
+          [action.player]: { ...state.players[action.player], points: action.points }
         }
       })
     };
@@ -62,7 +62,7 @@ export const usePartyApplicationData = () => {
     deck: {},
     card: {},
     status: "none",
-    players: { blue: {points: 0}, red: {points: 0} },
+    players: { blue: { points: 0 }, red: { points: 0 } },
     timer: -1,
   });
 
@@ -262,7 +262,7 @@ export const usePartyApplicationData = () => {
         gameRound('nextRound')
         setTimer(10)
       } else {
-        gameRound("reset"); 
+        gameRound("reset");
         handleFaces("empty");
         drawOrReshuffle();
         setTimer(10)
