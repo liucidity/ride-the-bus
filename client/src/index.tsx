@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
-  createBrowserRouter,
-  RouterProvider,
+  BrowserRouter,
   Route,
+  Routes,
 } from 'react-router-dom'
 
 import './index.css';
@@ -16,28 +16,39 @@ import reportWebVitals from './reportWebVitals';
 import Nav from './components/Nav';
 
 // const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-const router = createBrowserRouter([
-  {
-    path:"/",
-    element: <Solo/>,
-  },
-  {
-    path:'/party',
-    element: <Party/>
-  }, 
-  {
-    path:'/player',
-    element: <PlayerClient/>
-  }
-])
+// const router = createBrowserRouter([
+//   {
+//     path:'/',
+//     element: <Solo/>
+//   }, 
+//   {
+//     path:'/party',
+//     element: <Party/>
+//   }, 
+//   {
+//     path:'/player',
+//     element: <PlayerClient/>
+//   }
+ 
+// ])
+
+
+
 
 ReactDOM.render(
   <React.StrictMode>
+    <BrowserRouter>
     <Layout>
       <Nav/>
+      <Routes>
+        <Route path="/" element={<Solo/>}/>
+        <Route path="party" element={<Party/>}/>
+        <Route path="player" element={<PlayerClient/>}/>
+      </Routes>
 
-      <RouterProvider router={router}/>
+      {/* <RouterProvider router={router}/> */}
     </Layout>
+  </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 );
