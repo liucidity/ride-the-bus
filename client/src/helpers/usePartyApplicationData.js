@@ -41,6 +41,7 @@ export const usePartyApplicationData = () => {
           [action.player]: { ...state.players[action.player], choice: action.selection },
         },
       }),
+
       SET_TIMER: (state) => ({
         ...state,
         timer: action.timer
@@ -256,6 +257,8 @@ export const usePartyApplicationData = () => {
         default:
 
       }
+      // reset selection between rounds
+      handleSelection(player, '')
     }
     setTimeout(() => {
       if (round < 4) {
