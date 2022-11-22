@@ -26,6 +26,10 @@ io.on('connection', (socket) => {
     // console.log(round)
     socket.to('game-room').emit('round', round)
   })
+  socket.on('setUser', (username) => {
+    console.log(username)
+    socket.to('game-room').emit('setUser', username)
+  })
   socket.on('buttonPress', (player, choice) => {
     console.log(player, choice)
     socket.to('game-room').emit('buttonPress', player, choice)

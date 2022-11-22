@@ -14,6 +14,7 @@ export const usePartyApplicationData = () => {
   const SELECTION = "SELECTION";
   const SET_TIMER = 'SET_TIMER';
   const ADD_POINT = 'ADD_POINT';
+  const CREATE_PLAYER = 'CREATE_PLAYER'
 
   const reducer = (state, action) => {
     const reducers = {
@@ -52,6 +53,14 @@ export const usePartyApplicationData = () => {
           ...state.players,
           [action.player]: { ...state.players[action.player], points: action.points }
         }
+      }),
+      CREATE_PLAYER: (state) => ({
+        ...state,
+        players: {
+          ...state.players,
+          [action.username]: action.player
+
+        }
       })
     };
     return reducers[action.type](state) || reducers.default();
@@ -63,9 +72,17 @@ export const usePartyApplicationData = () => {
     deck: {},
     card: {},
     status: "none",
-    players: { blue: { points: 0 }, red: { points: 0 } },
+    players: {},
     timer: -1,
   });
+
+  const createPlayer = (username) => {
+    dispatch({
+      type: CREATE_PLAYER,
+      username: username,
+      player: { points: 0 }
+    })
+  }
 
   const gameRound = (action) => {
     if (action === "nextRound") {
@@ -354,6 +371,7 @@ export const usePartyApplicationData = () => {
     handleOptions,
     handleStatus,
     handleSelection,
-    setTimer
+    setTimer,
+    createPlayer,
   };
 };

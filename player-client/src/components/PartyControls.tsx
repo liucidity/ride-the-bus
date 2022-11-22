@@ -65,6 +65,10 @@ export default function PartyControls({player}:Props) {
     console.log(player,choice)
     socket.emit("buttonPress",player,choice)
   }
+  const setUser = (username:string) => {
+    console.log(username)
+    socket.emit('setUser', username)
+  }
 
   return(
     // <>
@@ -78,12 +82,14 @@ export default function PartyControls({player}:Props) {
       <>
       {<div className='flex flex-row justify-center'>
         <input placeholder="username" onChange={(e:any)=>setUsername(e.target.value)}>
-
+        
         </input>
-        <PartyButton option={option1} sendPress={sendPress} player={player}/>
-        <PartyButton option={option2} sendPress={sendPress} player={player}/>
-        {round===4 && <PartyButton option={option3} sendPress={sendPress} player={player}/>}
-        {round===4 && <PartyButton option={option4} sendPress={sendPress} player={player}/>}
+        <button onClick={()=>setUser(username)}>Submit Username</button>
+        {username}
+        <PartyButton option={option1} sendPress={sendPress} player={username}/>
+        <PartyButton option={option2} sendPress={sendPress} player={username}/>
+        {round===4 && <PartyButton option={option3} sendPress={username} player={username}/>}
+        {round===4 && <PartyButton option={option4} sendPress={sendPress} player={username}/>}
         </div>}
       </>
   )
