@@ -20,15 +20,12 @@ export default function Nav() {
         </svg>
         <span className='text-white text-2xl font-bold uppercase tracking-wide'>bus riders</span>
       <div>
-        <ul>
-          <li>
+        <ul className='flex flex-row m-2'>
+          <li className='m-2'>
             <NavLink className='text-white text-2xl font-bold uppercase tracking-wide' to='/'>Solo</NavLink>
           </li>
-          <li>
+          <li className='m-2'>
             <NavLink className='text-white text-2xl font-bold uppercase tracking-wide' to="/party">Party</NavLink>
-          </li>
-          <li>
-            <NavLink className='text-white text-2xl font-bold uppercase tracking-wide' to="/player">Player</NavLink>
           </li>
         </ul>
       </div>
