@@ -18,24 +18,44 @@ const io = socketIo(server, {
 io.on('connection', (socket) => {
   console.log('client connected: ', socket.id)
 
-  socket.join('game-room')
+  let room = ''
+  
+  socket.on('create-room', (roomId) => {
+    console.log('roomid', roomId)
+    room = roomId
+  })
+  
+  socket.join(room)
+
+  socket.on('newRoom', (roomId) => {
+    socket.to(room).emit('joinedRoom', roomId)
+  })
 
   socket.on('disconnect', (reason) => {
     console.log(reason, 1)
   })
   socket.on('round', (round) => {
     // console.log(round)
-    socket.to('game-room').emit('round', round)
+    socket.to(room).emit('round', round)
   })
   socket.on('setUser', (username) => {
     console.log(username)
-    socket.to('game-room').emit('setUser', username)
+    socket.to(room).emit('setUser', username)
   })
   socket.on('buttonPress', (player, choice) => {
     console.log(player, choice)
-    socket.to('game-room').emit('buttonPress', player, choice)
+    socket.to(room).emit('buttonPress', player, choice)
   });
+
 })
+
+io.of("/").adapter.on("create-room", (room) => {
+  console.log(`room ${room} was created`);
+});
+
+io.of("/").adapter.on("join-room", (room, id) => {
+  console.log(`socket ${id} has joined room ${room}`);
+});
 
 
 

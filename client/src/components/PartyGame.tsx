@@ -17,10 +17,11 @@ type Props = {
   setTimer: any
   handleSelection:any
   createPlayer:any
+  setRoomId: any
 }
 
 
-export default function PartyGame({state, updateDeck, handleRound, setTimer, handleSelection, createPlayer}:Props) {
+export default function PartyGame({state, updateDeck, handleRound, setTimer, handleSelection, createPlayer, setRoomId}:Props) {
   const socketRef = useRef<Socket>();
 
   const startGame = async() => {
@@ -38,6 +39,10 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
       }
     }) 
     updateDeck('new');
+    setRoomId();
+
+    
+
     socketRef.current.on('connect', ()=> console.log(socketRef.current.id))
     socketRef.current.on('connect_error', ()=>{
       setTimeout(()=>socketRef.current.connect()
@@ -55,6 +60,7 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
       // update player state
       handleSelection(player,choice)
     });
+    
     return ()=>{
       socketRef.current.off('connect')
       socketRef.current.off('disconnect')
@@ -64,6 +70,11 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
 
     
   }, [])
+
+  useEffect(() => {
+    socketRef.current.emit('create-room', state.room)
+  },[state.room])
+
 
   useEffect(()=> {
     console.log(state.round)
@@ -84,6 +95,7 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
    <h1 className="text-2xl font-bold text-white pt-10">
      Bus Riders
    </h1>
+   <h1>Room ID: {state.room}</h1>
      {!state.card[0] && 
      <div className='pt-40'>
       <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={() => startGame()}>

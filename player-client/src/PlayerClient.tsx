@@ -18,12 +18,13 @@ export default function PlayerClient() {
     const [round, setRound] = useState(1)
     const [username, setUsername] = useState('')
     const [playerReady, setPlayerReady] = useState(false)
+    const [roomId, setRoomId] = useState('')
 
 
   useEffect(() => {
     console.log('start')
     // socket.on('connect', ()=> console.log(socket.id))
-    socket.on('connection', (socket)=> socket.join('game-room'))
+    // socket.on('connection', (socket)=> socket.join('game-room'))
     socket.on('connect_error', ()=>{
       setTimeout(()=>socket.connect()
       ,5000)
@@ -46,18 +47,21 @@ export default function PlayerClient() {
     console.log(player,choice)
     socket.emit("buttonPress",player,choice)
   }
-  const setUser = (username:string) => {
+  const setUser = (username:string, roomId:string) => {
     
     console.log(username)
     setUsername(username)
     setPlayerReady(true)
+    // socket.on('connection', (socket)=> socket.to('abcd').emit('socketRoomID', roomId))
+    socket.emit('newRoom', roomId)
     socket.emit('setUser', username)
   }
 
+  console.log('roomID:', roomId)
 
   return(
     <>
-    {!playerReady && <PlayerCreate setUser={setUser} setUsername={setUsername} username={username}/>}
+    {!playerReady && <PlayerCreate setUser={setUser} setUsername={setUsername} username={username} setRoomId={setRoomId} roomId={roomId}/>}
     {playerReady && <PartyControls player={username} sendPress={sendPress} round={round}/>}
     {/* <PartyControls state={state} player={'blue'} handleOptions={handleOptions}/> */}
     {/* <PartyControls state={state} player={'red'} handleOptions={handleOptions}/> */}

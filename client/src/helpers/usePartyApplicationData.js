@@ -14,7 +14,8 @@ export const usePartyApplicationData = () => {
   const SELECTION = "SELECTION";
   const SET_TIMER = 'SET_TIMER';
   const ADD_POINT = 'ADD_POINT';
-  const CREATE_PLAYER = 'CREATE_PLAYER'
+  const CREATE_PLAYER = 'CREATE_PLAYER';
+  const SET_ROOM_ID = 'SET_ROOM_ID'
 
   const reducer = (state, action) => {
     const reducers = {
@@ -61,6 +62,10 @@ export const usePartyApplicationData = () => {
           [action.username]: action.player
 
         }
+      }),
+      SET_ROOM_ID: (state) => ({
+        ...state,
+        room: action.id
       })
     };
     return reducers[action.type](state) || reducers.default();
@@ -74,6 +79,7 @@ export const usePartyApplicationData = () => {
     status: "none",
     players: {},
     timer: -1,
+    room: null
   });
 
   const createPlayer = (username) => {
@@ -363,6 +369,23 @@ export const usePartyApplicationData = () => {
     }
   };
 
+  const setRoomId = () => {
+    dispatch({
+      type: SET_ROOM_ID,
+      id: generateRandomID(4)
+    })
+  }
+
+  const generateRandomID = (length) => {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
+
   return {
     updateDeck,
     state,
@@ -373,5 +396,6 @@ export const usePartyApplicationData = () => {
     handleSelection,
     setTimer,
     createPlayer,
+    setRoomId,
   };
 };
