@@ -31,7 +31,12 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
   let socket;
   // let socket = io('http://localhost:3001')
   useEffect(() => {
-    socketRef.current = io('http://localhost:3001')
+    socketRef.current = io('http://localhost:3001' , {
+      withCredentials: true,
+      extraHeaders: {
+        "controller": "abcd"
+      }
+    }) 
     updateDeck('new');
     socketRef.current.on('connect', ()=> console.log(socketRef.current.id))
     socketRef.current.on('connect_error', ()=>{

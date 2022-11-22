@@ -8,11 +8,12 @@ const server = http.createServer(app)
 
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:4000',
+    origin: ['http://localhost:4000', 'http://localhost:3000'],
     // methods: ['GET', 'POST']
     allowedHeaders: ["controller"],
     credentials: true
-  }
+  },
+  
 }) //in case server and client run on different urls
 io.on('connection', (socket) => {
   console.log('client connected: ', socket.id)
