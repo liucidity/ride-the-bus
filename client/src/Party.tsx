@@ -15,6 +15,7 @@ function Party() {
         updateDeck,
         handleRound,
         handleOptions,
+        createPlayer,
         handleSelection,
         setTimer,
       } = usePartyApplicationData();
@@ -38,7 +39,7 @@ function Party() {
 
   return (
     <div>
-      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection}/>
+      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection} createPlayer={createPlayer}/>
       {/* <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'blue'} />
       <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'red'} /> */}
     </div>

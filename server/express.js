@@ -8,8 +8,10 @@ const server = http.createServer(app)
 
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST']
+    origin: 'http://localhost:4000',
+    // methods: ['GET', 'POST']
+    allowedHeaders: ["controller"],
+    credentials: true
   }
 }) //in case server and client run on different urls
 io.on('connection', (socket) => {
@@ -18,11 +20,15 @@ io.on('connection', (socket) => {
   socket.join('game-room')
 
   socket.on('disconnect', (reason) => {
-    console.log(reason)
+    console.log(reason, 1)
   })
   socket.on('round', (round) => {
-    console.log(round)
+    // console.log(round)
     socket.to('game-room').emit('round', round)
+  })
+  socket.on('setUser', (username) => {
+    console.log(username)
+    socket.to('game-room').emit('setUser', username)
   })
   socket.on('buttonPress', (player, choice) => {
     console.log(player, choice)

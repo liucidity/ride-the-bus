@@ -16,10 +16,11 @@ type Props = {
   handleRound: any
   setTimer: any
   handleSelection:any
+  createPlayer:any
 }
 
 
-export default function PartyGame({state, updateDeck, handleRound, setTimer, handleSelection}:Props) {
+export default function PartyGame({state, updateDeck, handleRound, setTimer, handleSelection, createPlayer}:Props) {
   const socketRef = useRef<Socket>();
 
   const startGame = async() => {
@@ -36,6 +37,11 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
     socketRef.current.on('connect_error', ()=>{
       setTimeout(()=>socketRef.current.connect()
       ,5000)
+    })
+
+    socketRef.current.on('setUser', (username, icon)=> {
+      console.log(username,icon)
+      createPlayer(username)
     })
 
     
@@ -65,8 +71,8 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
   }
 
 
-  const bluePoints = state.players.blue.points;
-  const redPoints = state.players.red.points;
+  // const bluePoints = state.players.blue.points;
+  // const redPoints = state.players.red.points;
 
   return (
     <div className="flex flex-col items-center py-10">
@@ -106,12 +112,19 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
    {state.status === "incorrect" && <Message status={"incorrect"} />}
    {state.status === "none" && state.timer > 0 && <Message status={state.round} />}
    </div>
-   <div className='h-20'>
+   {Object.keys(state.players).map((player:any) => {
+     return(
+      <div className='h-20'>
+      {player} Player: {state.players[player].points}
+     </div>
+     )
+   })}
+   {/* <div className='h-20'>
     Blue Player: {bluePoints}
    </div>
    <div className='h-20'>
     Red Player: {redPoints}
-   </div>
+   </div> */}
  </div>
   )
 }
