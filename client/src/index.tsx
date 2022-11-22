@@ -36,7 +36,7 @@ import Nav from './components/Nav';
 
 
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <BrowserRouter>
     <Layout>
       <Nav/>
@@ -48,8 +48,8 @@ ReactDOM.render(
 
       {/* <RouterProvider router={router}/> */}
     </Layout>
-  </BrowserRouter>
-  </React.StrictMode>,
+  </BrowserRouter>,
+  // </React.StrictMode>,
   document.getElementById('root')
 );
 
