@@ -22,11 +22,14 @@ type Props = {
 
 
 export default function PartyGame({state, updateDeck, handleRound, setTimer, handleSelection, createPlayer, setRoomId}:Props) {
+  const [gameStarted, setGameStarted] = useState(false)
+
   const socketRef = useRef<Socket>();
 
   const startGame = async() => {
-
+    
     await updateDeck('draw');
+    setGameStarted(true)
     setTimer(10)
   }
   let socket;
@@ -96,14 +99,31 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
      Bus Riders
    </h1>
    <h1>Room ID: {state.room}</h1>
-     {!state.card[0] && 
+    
+   {<div className="text-l font-bold text-white pt-10 pb-5"> 
+      Connect to <a href='http://localhost:4000' target="_blank">
+        http://localhost:4000
+        </a> on your device
+    </div>}
+    {!gameStarted && <div className="text-2xl font-bold text-white pt-10 pb-5"> 
+      Players:
+    </div>}
+
+    {!gameStarted && Object.keys(state.players).map((player:string)=> {
+      return(
+        <div className="text-l font-bold text-white">
+          {player} ✅
+          </div>
+      )
+    })}
+     {!gameStarted && 
      <div className='pt-40'>
       <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={() => startGame()}>
         Start Game
       </button>
      </div>}
    <div className='flex flex-row pt-20'>
-     {state.card[0] &&
+     {gameStarted &&
      
      state.card.map((card:any, index:number) => {
        return (
@@ -129,19 +149,15 @@ export default function PartyGame({state, updateDeck, handleRound, setTimer, han
    {state.status === "incorrect" && <Message status={"incorrect"} />}
    {state.status === "none" && state.timer > 0 && <Message status={state.round} />}
    </div>
-   {Object.keys(state.players).map((player:any) => {
+
+   {gameStarted && Object.keys(state.players).map((player:any) => {
      return(
       <div className='h-20'>
       {player} Player: {state.players[player].points}
      </div>
      )
    })}
-   {/* <div className='h-20'>
-    Blue Player: {bluePoints}
-   </div>
-   <div className='h-20'>
-    Red Player: {redPoints}
-   </div> */}
+
  </div>
   )
 }
