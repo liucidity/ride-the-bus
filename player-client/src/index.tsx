@@ -3,13 +3,17 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import PlayerClient from './PlayerClient';
+import Layout from './components/Layout';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   // <React.StrictMode>
+  <Layout>
+
     <PlayerClient />
+  </Layout>
   // </React.StrictMode>
 );
 
