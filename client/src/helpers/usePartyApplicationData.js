@@ -1,7 +1,8 @@
 import axios from "axios";
 import { defaultMaxListeners } from "events";
 import { useReducer, useState } from "react";
-import compareCardSuits from './suits'
+import compareCardSuits from './suitsHelper'
+import findAndDeletePlayer from "./playersHelper";
 
 export const usePartyApplicationData = () => {
   const NEW_DECK = "NEW_DECK";
@@ -15,6 +16,7 @@ export const usePartyApplicationData = () => {
   const SET_TIMER = 'SET_TIMER';
   const ADD_POINT = 'ADD_POINT';
   const CREATE_PLAYER = 'CREATE_PLAYER';
+  const DISCONNECT_PLAYER = "DISCONNECT_PLAYER"
   const SET_ROOM_ID = 'SET_ROOM_ID'
 
   const reducer = (state, action) => {
@@ -63,6 +65,10 @@ export const usePartyApplicationData = () => {
 
         }
       }),
+      DISCONNECT_PLAYER: (state) => ({
+        ...state,
+        players: {...action.players}
+      }),
       SET_ROOM_ID: (state) => ({
         ...state,
         room: action.id
@@ -82,11 +88,19 @@ export const usePartyApplicationData = () => {
     room: null
   });
 
-  const createPlayer = (username) => {
+  const createPlayer = (username, socketId) => {
     dispatch({
       type: CREATE_PLAYER,
       username: username,
-      player: { points: 0 }
+      player: { points: 0, id: socketId }
+    })
+  }
+
+  const disconnectPlayer = (socketId) => {
+    const players = findAndDeletePlayer(state.players, socketId)
+    dispatch({
+      type: DISCONNECT_PLAYER,
+      players: players,
     })
   }
 
@@ -396,6 +410,7 @@ export const usePartyApplicationData = () => {
     handleSelection,
     setTimer,
     createPlayer,
+    disconnectPlayer,
     setRoomId,
   };
 };

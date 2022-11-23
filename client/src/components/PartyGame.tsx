@@ -26,6 +26,7 @@ export default function PartyGame({
   setTimer,
   handleSelection,
   createPlayer,
+  disconnectPlayer,
   setRoomId,
 }: Props) {
   const [gameStarted, setGameStarted] = useState(false);
@@ -48,7 +49,6 @@ export default function PartyGame({
       },
     });
     updateDeck("new");
-    setRoomId();
 
     socketRef.current.on("connect", () => console.log(socketRef.current.id));
     socketRef.current.on("connect_error", () => {
@@ -66,6 +66,11 @@ export default function PartyGame({
       handleSelection(player, choice);
     });
 
+    socketRef.current.on('disconnectPlayer', (id) => {
+      console.log(id)
+      disconnectPlayer(id)
+    })
+
     return () => {
       socketRef.current.off("connect");
       socketRef.current.off("disconnect");
@@ -78,6 +83,7 @@ export default function PartyGame({
   const sendRound = (round) => {
     socketRef.current.emit("round", round);
   };
+
 
   useEffect(() => {
     console.log(state.round);

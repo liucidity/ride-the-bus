@@ -14,6 +14,9 @@ const io = socketIo(server, {
     credentials: true,
   },
 }); //in case server and client run on different urls
+
+
+
 io.on("connection", (socket) => {
   console.log("client connected: ", socket.id);
 
@@ -22,11 +25,9 @@ io.on("connection", (socket) => {
 
   socket.on("enterRoom", ({ username }, callback) => {
     socket.to(room).emit("setUser", username);
-    socket
   });
 
   socket.on("round", (round) => {
-    // console.log(round)
     socket.to(room).emit("round", round);
   });
 
@@ -37,17 +38,19 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", (reason) => {
+    console.log('disc id', socket.it)
+    socket.to(room).emit('disconnectPlayer', socket.id)
     console.log(reason, 1);
   });
 });
 
-io.of("/").adapter.on("create-room", (room) => {
-  console.log(`room ${room} was created`);
-});
+// io.of("/").adapter.on("create-room", (room) => {
+//   console.log(`room ${room} was created`);
+// });
 
-io.of("/").adapter.on("join-room", (room, id) => {
-  console.log(`socket ${id} has joined room ${room}`);
-});
+// io.of("/").adapter.on("join-room", (room, id) => {
+//   console.log(`socket ${id} has joined room ${room}`);
+// });
 
 // This displays message that the server running and listening to specified port
 server.listen(port, () => console.log(`Listening on port ${port}`)); //Line 6
