@@ -47,14 +47,13 @@ export default function PlayerClient() {
     console.log(player,choice)
     socket.emit("buttonPress",player,choice)
   }
-  const setUser = (username:string, roomId:string) => {
+  const setUser = (username:string) => {
     
     console.log(username)
     setUsername(username)
     setPlayerReady(true)
-    // socket.on('connection', (socket)=> socket.to('abcd').emit('socketRoomID', roomId))
-    socket.emit('newRoom', roomId)
-    socket.emit('setUser', username)
+
+    socket.emit('enterRoom', {username})
   }
 
   console.log('roomID:', roomId)
