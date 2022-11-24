@@ -260,7 +260,7 @@ export default function PartyGame(
             {state.deck.remaining} cards remaining
           </p>
         )}
-      {/* </div> */}
+      </div>
       <div className="h-20">
         {state.status === "correct" && <Message status={"correct"} />}
         {state.status === "incorrect" && <Message status={"incorrect"} />}
@@ -280,7 +280,7 @@ export default function PartyGame(
             </>
           );
         })} */}
-        {gameStarted && <div id='bar-chart'>
+        {gameState === "running" && <div id='bar-chart'>
           <Bar options={options} data={data} />
         </div>}
     </div>
