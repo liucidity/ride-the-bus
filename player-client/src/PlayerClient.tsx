@@ -60,7 +60,7 @@ export default function PlayerClient() {
 
   return(
     <>
-    {!playerReady && <PlayerCreate setUser={setUser} setUsername={setUsername} username={username} setRoomId={setRoomId} roomId={roomId}/>}
+    {!playerReady && <PlayerCreate setUser={setUser} setUsername={setUsername} username={username} />}
     {playerReady && <PartyControls player={username} sendPress={sendPress} round={round}/>}
     {/* <PartyControls state={state} player={'blue'} handleOptions={handleOptions}/> */}
     {/* <PartyControls state={state} player={'red'} handleOptions={handleOptions}/> */}

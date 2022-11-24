@@ -32,16 +32,34 @@ export const options = {
   plugins: {
     legend: {
       position: 'top' as const,
+      labels: {
+        font: {
+          size: 0
+        }
+      } 
     },
     title: {
-      display: true,
+      display: false,
       text: 'Players',
     },
   },
-  // aspectRatio: 1,
   scales: {
     x: {
-      max: 10
+      max: 10,
+      ticks: {
+        color: 'white',
+        font: {
+          size: 18
+        }
+      }
+    },
+    y: {
+      ticks: {
+        color: 'white',
+        font: {
+          size: 18
+        }
+      }
     }
   },
   indexAxis: 'y',
@@ -96,9 +114,9 @@ export default function PartyGame({
       setTimeout(() => socketRef.current.connect(), 5000);
     });
 
-    socketRef.current.on("setUser", (username, icon) => {
-      console.log(username, icon);
-      createPlayer(username);
+    socketRef.current.on("setUser", (username, socketId) => {
+      console.log(username);
+      createPlayer(username, socketId);
     });
 
     socketRef.current.on("buttonPress", (player, choice) => {
@@ -145,7 +163,10 @@ export default function PartyGame({
       {
         label: 'Points',
         data: datasets,
-        backgroundColor: colors
+        backgroundColor: colors,
+        barThickness: 36,
+        maxBarThickness:48,
+        minBarLength: 24,
       },
     ]
   }
@@ -182,7 +203,7 @@ export default function PartyGame({
           </button>
         </div>
       )}
-      <div className="flex flex-row pt-20">
+      <div className="flex flex-row pt-10">
         {gameStarted &&
           state.card.map((card: any, index: number) => {
             return (
@@ -207,16 +228,16 @@ export default function PartyGame({
           />
         )}
       </div>
-      {/* <div> */}
+      <div>
         {(state.status === "correct" || state.statue === "incorrect") && (
           <p className="h-10 text-3xl text-white">
             {state.deck.remaining} cards remaining
           </p>
         )}
-      {/* </div> */}
-      <div className="h-20">
-        {state.status === "correct" && <Message status={"correct"} />}
-        {state.status === "incorrect" && <Message status={"incorrect"} />}
+      </div>
+      <div >
+        {/* {state.status === "correct" && <Message status={"correct"} />}
+        {state.status === "incorrect" && <Message status={"incorrect"} />} */}
         {state.status === "none" && state.timer > 0 && (
           <Message status={state.round} />
         )}
@@ -232,9 +253,9 @@ export default function PartyGame({
             </>
           );
         })} */}
-        <div id='bar-chart'>
+        {gameStarted && <div id='bar-chart'>
           <Bar options={options} data={data} />
-        </div>
+        </div>}
     </div>
   );
 }
