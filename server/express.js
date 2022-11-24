@@ -1,43 +1,56 @@
-const express = require('express'); //Line 1
+const express = require("express"); //Line 1
 const app = express(); //Line 2
-const socketIo = require('socket.io')
-const http = require('http')
+const socketIo = require("socket.io");
+const http = require("http");
 const port = process.env.PORT || 3001; //Line 3
 
-const server = http.createServer(app)
+const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: ['http://localhost:4000', 'http://localhost:3000'],
+    origin: ["http://localhost:4000", "http://localhost:3000"],
     // methods: ['GET', 'POST']
     allowedHeaders: ["controller"],
-    credentials: true
+    credentials: true,
   },
-  
-}) //in case server and client run on different urls
-io.on('connection', (socket) => {
-  console.log('client connected: ', socket.id)
+}); //in case server and client run on different urls
 
-  socket.join('game-room')
 
-  socket.on('disconnect', (reason) => {
-    console.log(reason, 1)
-  })
-  socket.on('round', (round) => {
-    // console.log(round)
-    socket.to('game-room').emit('round', round)
-  })
-  socket.on('setUser', (username) => {
-    console.log(username)
-    socket.to('game-room').emit('setUser', username)
-  })
-  socket.on('buttonPress', (player, choice) => {
-    console.log(player, choice)
-    socket.to('game-room').emit('buttonPress', player, choice)
+
+io.on("connection", (socket) => {
+  console.log("client connected: ", socket.id);
+
+  const room = 'mainRoom'
+  socket.join(room)
+
+  socket.on("enterRoom", ({ username }, callback) => {
+    socket.to(room).emit("setUser", username);
   });
-})
+
+  socket.on("round", (round) => {
+    socket.to(room).emit("round", round);
+  });
 
 
+  socket.on("buttonPress", (player, choice) => {
+    console.log(player, choice);
+    socket.to(room).emit("buttonPress", player, choice);
+  });
+
+  socket.on("disconnect", (reason) => {
+    console.log('disc id', socket.it)
+    socket.to(room).emit('disconnectPlayer', socket.id)
+    console.log(reason, 1);
+  });
+});
+
+// io.of("/").adapter.on("create-room", (room) => {
+//   console.log(`room ${room} was created`);
+// });
+
+// io.of("/").adapter.on("join-room", (room, id) => {
+//   console.log(`socket ${id} has joined room ${room}`);
+// });
 
 // This displays message that the server running and listening to specified port
 server.listen(port, () => console.log(`Listening on port ${port}`)); //Line 6

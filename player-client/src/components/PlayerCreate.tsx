@@ -21,5 +21,5 @@ export default function PlayerCreate({setUser, setUsername, username}:Props) {
     <button className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600" onClick={()=>handleClick(username)}>Ready</button>
     </div>
     </>
-  )
+  );
 }
