@@ -82,13 +82,18 @@ export default function PartyControls({player, round, sendPress}:Props) {
     //   </div>}
     // </>
       <>
-      {<div className='flex flex-row justify-center'>
+      {<div className='flex flex-col items-center pt-80'>
        
-        {player}
+        <div className="text-l font-bold text-white pt-10 pb-5">
+          {player}
+          </div>
+          <div className='flex flex-row justify-center'>
+
         <PartyButton option={option1} sendPress={sendPress} player={player}/>
         <PartyButton option={option2} sendPress={sendPress} player={player}/>
         {round===4 && <PartyButton option={option3} sendPress={sendPress} player={player}/>}
         {round===4 && <PartyButton option={option4} sendPress={sendPress} player={player}/>}
+          </div>
         </div>}
       </>
   )
