@@ -11,8 +11,6 @@
   max-height: 500px;
   display: flex;
   justify-content: center;
-  padding-bottom: 5%;
-  /* overflow: auto; */
 }
 
 canvas {

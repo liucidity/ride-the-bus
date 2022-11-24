@@ -6,6 +6,7 @@ import Card from "./Card";
 import ReactCardFlip from "react-card-flip";
 import React, { useEffect, useState, useRef } from "react";
 import { io, Socket } from "socket.io-client";
+import { usePartyApplicationData } from "../helpers/usePartyApplicationData";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -47,8 +48,6 @@ export const options = {
   indexAxis: 'y',
 };
 
-
-
 type Props = {
   state: any;
   updateDeck: any;
@@ -60,23 +59,50 @@ type Props = {
   setRoomId: any;
 };
 
-export default function PartyGame({
-  state,
-  updateDeck,
-  handleRound,
-  setTimer,
-  handleSelection,
-  createPlayer,
-  disconnectPlayer,
-  setRoomId,
-}: Props) {
-  const [gameStarted, setGameStarted] = useState(false);
+export default function PartyGame(
+//   {
+//   state,
+//   updateDeck,
+//   handleRound,
+//   setTimer,
+//   handleSelection,
+//   createPlayer,
+//   disconnectPlayer,
+// }: Props
+) {
+  const {
+    state,
+    updateDeck,
+    handleRound,
+    createPlayer,
+    disconnectPlayer,
+    handleSelection,
+    setTimer,
+    pauseGameStatus,
+    startGameStatus,
+    resetState,
+
+  } = usePartyApplicationData();
+  
+  // const [gameStarted, setGameStarted] = useState(false);
+  const [initialState, setInitialState] = useState({})
+  const gameState = state.gameState
 
   const socketRef = useRef<Socket>();
 
   const startGame = async () => {
+    if (gameState !== 'end') {
+      // initialState = {...state}
+      setInitialState({...state})
+      console.log('state at start', initialState)
+
+    } else {
+      console.log(initialState)
+      resetState(initialState)
+      updateDeck("reshuffle")
+    }
     await updateDeck("draw");
-    setGameStarted(true);
+    startGameStatus();
     setTimer(10);
   };
 
@@ -133,6 +159,7 @@ export default function PartyGame({
 
 
   //Bar Chart Data
+  
   let labels = Object.keys(state.players)
   let datasets = labels.map((player) => {
     return state.players[player].points
@@ -154,7 +181,6 @@ export default function PartyGame({
   return (
     <div className="flex flex-col items-center pt-10">
       <h1 className="text-2xl font-bold text-white pt-10">Bus Riders</h1>
-
       {
         <div className="text-l font-bold text-white pt-10 pb-5">
           Connect to{" "}
@@ -164,15 +190,15 @@ export default function PartyGame({
           on your device
         </div>
       }
-      {!gameStarted && (
+      {gameState !== 'running' && (
         <div className="text-2xl font-bold text-white pt-10 pb-5">Players:</div>
       )}
 
-      {!gameStarted &&
+      {gameState !== 'running' &&
         Object.keys(state.players).map((player: string) => {
           return <div className="text-l font-bold text-white">{player} ✅</div>;
         })}
-      {!gameStarted && (
+      {gameState !== 'running' && (
         <div className="pt-40">
           <button
             className="bg-blue-500 rounded w-40 h-12 m-4 text-white shadow-lg hover:bg-blue-600"
@@ -183,7 +209,7 @@ export default function PartyGame({
         </div>
       )}
       <div className="flex flex-row pt-20">
-        {gameStarted &&
+        {gameState === 'running' &&
           state.card.map((card: any, index: number) => {
             return (
               <ReactCardFlip
@@ -198,7 +224,7 @@ export default function PartyGame({
       </div>
 
       <div>
-        {state.timer >= 0 && (
+        {state.timer >= 0 && gameState !== "end" && (
           <Timer
             setTimer={setTimer}
             isActive={true}
@@ -217,7 +243,8 @@ export default function PartyGame({
       <div className="h-20">
         {state.status === "correct" && <Message status={"correct"} />}
         {state.status === "incorrect" && <Message status={"incorrect"} />}
-        {state.status === "none" && state.timer > 0 && (
+        {state.gameState === "end" && <Message status={state}  />}
+        {state.gameState !== 'end' && state.status === "none" && state.timer > 0 && (
           <Message status={state.round} />
         )}
       </div>
