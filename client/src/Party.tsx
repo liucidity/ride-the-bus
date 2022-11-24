@@ -41,7 +41,9 @@ function Party() {
 
   return (
     <>
-      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection} createPlayer={createPlayer} disconnectPlayer={disconnectPlayer} setRoomId={setRoomId}/>
+      <PartyGame 
+      // state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection} createPlayer={createPlayer} disconnectPlayer={disconnectPlayer} setRoomId={setRoomId} 
+      />
       {/* <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'blue'} />
       <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'red'} /> */}
     </>
