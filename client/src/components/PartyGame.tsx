@@ -5,9 +5,49 @@ import Message from "./Message";
 import Card from "./Card";
 import ReactCardFlip from "react-card-flip";
 import React, { useEffect, useState, useRef } from "react";
-// import { useEffect, useState } from 'react';
-// import { callbackify } from 'util';
 import { io, Socket } from "socket.io-client";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+//Bar Chart Elements/Config
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+export const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+    title: {
+      display: true,
+      text: 'Players',
+    },
+  },
+  // aspectRatio: 1,
+  scales: {
+    x: {
+      max: 10
+    }
+  },
+  indexAxis: 'y',
+};
+
+
 
 type Props = {
   state: any;
@@ -16,6 +56,7 @@ type Props = {
   setTimer: any;
   handleSelection: any;
   createPlayer: any;
+  disconnectPlayer: any;
   setRoomId: any;
 };
 
@@ -67,7 +108,7 @@ export default function PartyGame({
     });
 
     socketRef.current.on('disconnectPlayer', (id) => {
-      console.log(id)
+      console.log('disconnected player',id)
       disconnectPlayer(id)
     })
 
@@ -90,8 +131,28 @@ export default function PartyGame({
     sendRound(state.round);
   }, [state.round]);
 
+
+  //Bar Chart Data
+  let labels = Object.keys(state.players)
+  let datasets = labels.map((player) => {
+    return state.players[player].points
+  })
+  let colors = ['blue', 'white', 'red', 'yellow']
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Points',
+        data: datasets,
+        backgroundColor: colors
+      },
+    ]
+  }
+
+
   return (
-    <div className="flex flex-col items-center py-10">
+    <div className="flex flex-col items-center pt-10">
       <h1 className="text-2xl font-bold text-white pt-10">Bus Riders</h1>
 
       {
@@ -146,13 +207,13 @@ export default function PartyGame({
           />
         )}
       </div>
-      <div>
+      {/* <div> */}
         {(state.status === "correct" || state.statue === "incorrect") && (
           <p className="h-10 text-3xl text-white">
             {state.deck.remaining} cards remaining
           </p>
         )}
-      </div>
+      {/* </div> */}
       <div className="h-20">
         {state.status === "correct" && <Message status={"correct"} />}
         {state.status === "incorrect" && <Message status={"incorrect"} />}
@@ -161,14 +222,22 @@ export default function PartyGame({
         )}
       </div>
 
-      {gameStarted &&
+      {/* {gameStarted &&
         Object.keys(state.players).map((player: any) => {
           return (
+            <>
             <div className="h-20">
-              {player} Player: {state.players[player].points}
+              {player}: {state.players[player].points}
             </div>
+            </>
           );
-        })}
+        })} */}
+        <div id='bar-chart'>
+          <Bar options={options} data={data} />
+        </div>
     </div>
   );
 }
+
+
+
