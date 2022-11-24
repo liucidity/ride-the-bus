@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", (reason) => {
-    console.log('disc id', socket.it)
+    console.log('disc id', socket.id)
     socket.to(room).emit('disconnectPlayer', socket.id)
     console.log(reason, 1);
   });

@@ -16,6 +16,7 @@ function Party() {
         handleRound,
         handleOptions,
         createPlayer,
+        disconnectPlayer,
         handleSelection,
         setTimer,
         setRoomId,
@@ -39,11 +40,11 @@ function Party() {
   // }, [])
 
   return (
-    <div>
-      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection} createPlayer={createPlayer} setRoomId={setRoomId}/>
+    <>
+      <PartyGame state={state} updateDeck={updateDeck} handleRound={handleRound} setTimer={setTimer} handleSelection={handleSelection} createPlayer={createPlayer} disconnectPlayer={disconnectPlayer} setRoomId={setRoomId}/>
       {/* <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'blue'} />
       <PartyControls state={state} handleOptions={handleOptions} handleSelection={handleSelection} player={'red'} /> */}
-    </div>
+    </>
 
       
   );
