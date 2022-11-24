@@ -18,7 +18,6 @@ export default function PlayerClient() {
     const [round, setRound] = useState(1)
     const [username, setUsername] = useState('')
     const [playerReady, setPlayerReady] = useState(false)
-    const [roomId, setRoomId] = useState('')
 
 
   useEffect(() => {
@@ -56,7 +55,6 @@ export default function PlayerClient() {
     socket.emit('enterRoom', {username})
   }
 
-  console.log('roomID:', roomId)
 
   return(
     <>

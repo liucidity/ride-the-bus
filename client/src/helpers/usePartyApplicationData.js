@@ -16,8 +16,10 @@ export const usePartyApplicationData = () => {
   const SET_TIMER = 'SET_TIMER';
   const ADD_POINT = 'ADD_POINT';
   const CREATE_PLAYER = 'CREATE_PLAYER';
-  const DISCONNECT_PLAYER = "DISCONNECT_PLAYER"
-  const SET_ROOM_ID = 'SET_ROOM_ID'
+  const DISCONNECT_PLAYER = "DISCONNECT_PLAYER";
+  const SET_ROOM_ID = 'SET_ROOM_ID';
+  const SET_GAME_STATE = 'SET_GAME_STATE';
+  const RESET_STATE = 'RESET_STATE'
 
   const reducer = (state, action) => {
     const reducers = {
@@ -67,12 +69,18 @@ export const usePartyApplicationData = () => {
       }),
       DISCONNECT_PLAYER: (state) => ({
         ...state,
-        players: {...action.players}
+        players: { ...action.players }
       }),
       SET_ROOM_ID: (state) => ({
         ...state,
         room: action.id
-      })
+      }),
+      SET_GAME_STATE: (state) => ({
+        ...state,
+        gameState: action.gameState,
+        winner: action.winner || null
+      }),
+      RESET_STATE: (state) => action.state
     };
     return reducers[action.type](state) || reducers.default();
   };
@@ -85,8 +93,16 @@ export const usePartyApplicationData = () => {
     status: "none",
     players: {},
     timer: -1,
-    room: null
+    gameState: 'paused', // can be running, paused, or end
   });
+
+  const resetState = (state) => {
+    console.log('reset state', state)
+    dispatch({
+      type: RESET_STATE,
+      state: state
+    })
+  }
 
   const createPlayer = (username, socketId) => {
     dispatch({
@@ -181,6 +197,12 @@ export const usePartyApplicationData = () => {
         action: "none",
       });
     }
+    if (action === "end") {
+      dispatch({
+        type: STATUS,
+        action: "end"
+      })
+    }
   };
 
   const drawOrReshuffle = async () => {
@@ -209,6 +231,32 @@ export const usePartyApplicationData = () => {
       player: player,
       points: state.players[player].points += amount
     })
+
+    // check if this player has scored more than 10 points
+    if (state.players[player].points >= 10) {
+      endGameStatus(player)
+      handleStatus("end")
+
+    }
+  }
+  const startGameStatus = () => {
+    dispatch({
+      type: SET_GAME_STATE,
+      gameState: "running"
+    })
+  }
+  const endGameStatus = (player) => {
+    dispatch({
+      type: SET_GAME_STATE,
+      gameState: "end",
+      winner: `${player}`
+    })
+  }
+  const pauseGameStatus = () => {
+    dispatch({
+      type: SET_GAME_STATE,
+      gameState: "paused"
+    })
   }
 
 
@@ -226,13 +274,13 @@ export const usePartyApplicationData = () => {
             (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")
           ) {
             handleStatus("correct");
-            addPoint(player, 1)
+            addPoint(player, 10)
           } else if (
             choice === "Black" &&
             (card[0].suit === "CLUBS" || card[0].suit === "SPADES")
           ) {
             handleStatus("correct");
-            addPoint(player, 1)
+            addPoint(player, 10)
           } else {
             handleStatus("incorrect");
           }
@@ -391,14 +439,14 @@ export const usePartyApplicationData = () => {
   }
 
   const generateRandomID = (length) => {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
-}
+  }
 
   return {
     updateDeck,
@@ -412,5 +460,8 @@ export const usePartyApplicationData = () => {
     createPlayer,
     disconnectPlayer,
     setRoomId,
+    startGameStatus,
+    pauseGameStatus,
+    resetState
   };
 };
