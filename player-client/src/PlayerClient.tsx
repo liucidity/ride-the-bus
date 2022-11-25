@@ -8,10 +8,10 @@ import PlayerCreate from "./components/PlayerCreate"
 
 
 const socket = io('https://ride-the-bus-socket.onrender.com' , {
-  withCredentials: true,
-  extraHeaders: {
-    "Access-Control-Allow-Origin": "abcd"
-  }
+  // withCredentials: true,
+  // extraHeaders: {
+  //   "Access-Control-Allow-Origin": "abcd"
+  // }
 })    
 export default function PlayerClient() {
   
