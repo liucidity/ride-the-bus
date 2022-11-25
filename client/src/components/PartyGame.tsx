@@ -118,6 +118,7 @@ export default function PartyGame() {
 
   useEffect(() => {
     socketRef.current = io("https://ride-the-bus-socket.onrender.com", {
+      transports: ['websocket', 'polling', 'flashsocket'] 
       // withCredentials: true,
       // extraHeaders: {
       //   'Access-Control-Allow-Origin': "abcd",

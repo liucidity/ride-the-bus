@@ -8,7 +8,8 @@ import PlayerCreate from "./components/PlayerCreate"
 
 
 const socket = io('https://ride-the-bus-socket.onrender.com' , {
-  // withCredentials: true,
+  transports: ['websocket', 'polling', 'flashsocket']  
+// withCredentials: true,
   // extraHeaders: {
   //   "Access-Control-Allow-Origin": "abcd"
   // }
