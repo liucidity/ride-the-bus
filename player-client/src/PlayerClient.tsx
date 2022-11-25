@@ -7,7 +7,7 @@ import PlayerCreate from "./components/PlayerCreate"
 
 
 
-const socket = io('http://localhost:3001' , {
+const socket = io('https://ride-the-bus-socket.onrender.com' , {
   withCredentials: true,
   extraHeaders: {
     "controller": "abcd"
