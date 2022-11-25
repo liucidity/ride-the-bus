@@ -192,8 +192,8 @@ export default function PartyGame() {
       {
         <div className="text-l font-bold text-white pt-10 pb-5">
           Connect to{" "}
-          <a href="http://localhost:4000" target="_blank" rel="noreferrer">
-            http://localhost:4000
+          <a href="http://ride-the-bus-player.onrender.com" target="_blank" rel="noreferrer">
+            http://ride-the-bus-player.onrender.com
           </a>{" "}
           on your device
         </div>
