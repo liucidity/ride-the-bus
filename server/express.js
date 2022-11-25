@@ -24,7 +24,8 @@ io.on("connection", (socket) => {
   socket.join(room)
 
   socket.on("enterRoom", ({ username }, callback) => {
-    socket.to(room).emit("setUser", username);
+    console.log('testing ID', username, socket.id)
+    socket.to(room).emit("setUser", username, socket.id);
   });
 
   socket.on("round", (round) => {
