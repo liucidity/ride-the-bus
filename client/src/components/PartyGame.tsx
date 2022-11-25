@@ -118,10 +118,10 @@ export default function PartyGame() {
 
   useEffect(() => {
     socketRef.current = io("https://ride-the-bus-socket.onrender.com", {
-      withCredentials: true,
-      extraHeaders: {
-        controller: "abcd",
-      },
+      // withCredentials: true,
+      // extraHeaders: {
+      //   controller: "abcd",
+      // },
     });
     updateDeck("new");
 

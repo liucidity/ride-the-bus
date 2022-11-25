@@ -11,7 +11,7 @@ const io = socketIo(server, {
     origin: ["http://localhost:4000", "http://localhost:3000", 'https://ride-the-bus-player.onrender.com/', 'https://ride-the-bus.onrender.com/'],
     // methods: ['GET', 'POST']
     // allowedHeaders: ["controller"],
-    credentials: true,
+    // credentials: true,
   },
 }); //in case server and client run on different urls
 
