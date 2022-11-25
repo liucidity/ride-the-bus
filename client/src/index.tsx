@@ -9,7 +9,6 @@ import {
 import './index.css';
 import Solo from './Solo';
 import Party from './Party';
-import PlayerClient from './PlayerClient'
 import Layout from './components/Layout';
 
 import reportWebVitals from './reportWebVitals';
@@ -43,7 +42,6 @@ ReactDOM.render(
       <Routes>
         <Route path="/" element={<Solo/>}/>
         <Route path="party" element={<Party/>}/>
-        <Route path="player" element={<PlayerClient/>}/>
       </Routes>
 
       {/* <RouterProvider router={router}/> */}
