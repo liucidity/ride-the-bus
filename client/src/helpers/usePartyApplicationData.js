@@ -167,22 +167,10 @@ export const usePartyApplicationData = () => {
   };
 
   const handleStatus = (action) => {
-    if (action === "correct") {
+    if (action === "reveal") {
       dispatch({
         type: STATUS,
-        status: "correct",
-      });
-      setTimeout(() => {
-        dispatch({
-          type: STATUS,
-          status: "none",
-        });
-      }, 4000);
-    }
-    if (action === "incorrect") {
-      dispatch({
-        type: STATUS,
-        status: "incorrect",
+        status: "reveal",
       });
       setTimeout(() => {
         dispatch({
@@ -261,7 +249,7 @@ export const usePartyApplicationData = () => {
 
 
   const handleRound = (players) => {
-    console.log('handleRound functioning running!')
+    console.log('handleRound functioning running!', state.players)
     let round = state.round;
     let card = state.card;
     handleFaces("add");
@@ -273,33 +261,33 @@ export const usePartyApplicationData = () => {
             choice === "Red" &&
             (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")
           ) {
-            handleStatus("correct");
-            addPoint(player, 10)
+            handleStatus("reveal");
+            addPoint(player, 1)
           } else if (
             choice === "Black" &&
             (card[0].suit === "CLUBS" || card[0].suit === "SPADES")
           ) {
-            handleStatus("correct");
-            addPoint(player, 10)
+            handleStatus("reveal");
+            addPoint(player, 1)
           } else {
-            handleStatus("incorrect");
+            handleStatus("reveal");
           }
           break;
         case 2:
           if (choice === "Higher" && card[1].value > card[0].value) {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 1)
           } else if (choice === "Lower" && card[1].value < card[0].value) {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 1)
           } else if (choice === 'Higher' && card[1].value === card[0].value && compareCardSuits(card[1].code, card[0].code)) {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 1)
           } else if (choice === 'Lower' && card[1].value === card[0].value && !compareCardSuits(card[1].code, card[0].code)) {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 1)
           } else {
-            handleStatus("incorrect");
+            handleStatus("reveal");
           }
           break;
         case 3:
@@ -310,42 +298,45 @@ export const usePartyApplicationData = () => {
             card[2].value < high &&
             card[2].value > low
           ) {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 1)
           } else if (
             choice === "Outside" &&
             (card[2].value > high || card[2].value < low)
           ) {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 1)
           } else {
-            handleStatus("incorrect");
+            handleStatus("reveal");
           }
           break;
         case 4:
           if (choice === "Diamond" && card[3].suit === "DIAMONDS") {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 3)
           } else if (choice === "Club" && card[3].suit === "CLUBS") {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 3)
           } else if (choice === "Heart" && card[3].suit === "HEARTS") {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 3)
           } else if (choice === "Spade" && card[3].suit === "SPADES") {
-            handleStatus("correct");
+            handleStatus("reveal");
             addPoint(player, 3)
           } else {
-            handleStatus("incorrect");
+            handleStatus("reveal");
           }
           break;
         default:
 
       }
       // reset selection between rounds
-      handleSelection(player, '')
     }
+    console.log('before set time out', state)
     setTimeout(() => {
+      for (let player in players) {
+        handleSelection(player, '')
+      };
       if (round < 4) {
         gameRound('nextRound')
         setTimer(10)
