@@ -109,7 +109,7 @@ export default function PartyGame(
   //Socket connection
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:3001", {
+    socketRef.current = io("https://ride-the-bus-socket.onrender.com", {
       withCredentials: true,
       extraHeaders: {
         controller: "abcd",
