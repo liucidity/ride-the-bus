@@ -262,8 +262,8 @@ export default function PartyGame(
         )}
       </div>
       <div className="h-20">
-        {state.status === "correct" && <Message status={"correct"} />}
-        {state.status === "incorrect" && <Message status={"incorrect"} />}
+        {/* {state.status === "correct" && <Message status={"correct"} />} */}
+        {/* {state.status === "incorrect" && <Message status={"incorrect"} />} */}
         {state.gameState === "end" && <Message status={state}  />}
         {state.gameState !== 'end' && state.status === "none" && state.timer > 0 && (
           <Message status={state.round} />
