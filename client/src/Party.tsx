@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { callbackify } from 'util';
 import {io} from 'socket.io-client'
 import PartyGame from './components/PartyGame';
-import PartyControls from './components/PartyControls'
 import React from 'react';
 
 
