@@ -91,8 +91,8 @@ export default function PartyControls({player, round, sendPress}:Props) {
 
         <PartyButton option={option1} sendPress={sendPress} player={player}/>
         <PartyButton option={option2} sendPress={sendPress} player={player}/>
-        {round===4 && <PartyButton option={option1} sendPress={sendPress} player={player}/>}
-        {round===4 && <PartyButton option={option2} sendPress={sendPress} player={player}/>}
+        {round===4 && <PartyButton option={option3} sendPress={sendPress} player={player}/>}
+        {round===4 && <PartyButton option={option4} sendPress={sendPress} player={player}/>}
           </div>
         </div>}
       </>
