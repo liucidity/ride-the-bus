@@ -1,7 +1,7 @@
 // import './index.css';
 import { useApplicationData } from '../helpers/useSoloApplicationData';
 import Timer from './Timer';
-import Message from './Message';
+import SoloMessage from './SoloMessage';
 import Card from './Card';
 import ReactCardFlip from 'react-card-flip';
 import React from 'react';
@@ -48,8 +48,8 @@ export default function SoloGame({state, updateDeck}:Props) {
 </p>}
    </div>
    <div className='h-20'>
-   {state.status === "correct" && <Message status={"correct"} />}
-   {state.status === "incorrect" && <Message status={"incorrect"} />}
+   {state.status === "correct" && <SoloMessage status={"correct"} />}
+   {state.status === "incorrect" && <SoloMessage status={"incorrect"} />}
    </div>
  </div>
   )
