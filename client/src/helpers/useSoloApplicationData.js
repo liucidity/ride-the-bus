@@ -59,7 +59,7 @@ export const useSoloApplicationData = () => {
       case 4:
         return ["Diamond", "Club", "Heart", "Spade"]
       default:
-        return ['error', 'error']
+        return ['You', 'Win!']
     }
   }
 
