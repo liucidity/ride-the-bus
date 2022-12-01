@@ -4,7 +4,7 @@ Ride the Bus is a party game that requires logical deduction skills and a bit of
 
 ## Sample Footage
 
-
+!["Sample Footage"](https://github.com/lschan12/ride-the-bus/blob/main/public/busriders.gif?raw=true)
 
 ## Features
 
