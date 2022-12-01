@@ -19,5 +19,7 @@ Players looking to compete with their friends can join with their devices as con
 ## Tech Stack
 
 Front End: React, Node, Axios
+
 Back End: Express, Socket.Io
+
 APIs: Deck of Cards API 
