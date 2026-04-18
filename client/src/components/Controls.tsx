@@ -1,25 +1,45 @@
-import React from "react";
-import Button from "./Button"
+import React from 'react';
+import Button from './Button';
 
 type Props = {
-  state: any,
-  handleOptions: any,
-  handleGuess: any,
-}
+  state: any;
+  handleOptions: any;
+  handleGuess: any;
+};
 
-export default function Controls({state,player,handleOptions, handleGuess}:Props) {
-  const option1 = handleOptions()[0];
-  const option2 = handleOptions()[1];
-  const option3 = handleOptions()[2];
-  const option4 = handleOptions()[3];
-  return(
-    <>
-    {state.card[0] && <div className='flex flex-row justify-center'>
-      <Button option={option1} handleGuess={handleGuess} status={state.status}/>
-      <Button option={option2} handleGuess={handleGuess} status={state.status}/>
-      {state.round===4 && <Button option={option3} handleGuess={handleGuess} status={state.status} />}
-      {state.round===4 && <Button option={option4} handleGuess={handleGuess} status={state.status} />}
-      </div>}
-    </>
-  )
+const ROUND_LABELS: Record<number, string> = {
+  1: 'Red or Black?',
+  2: 'Higher or Lower?',
+  3: 'Inside or Outside?',
+  4: 'Pick the Suit',
+};
+
+export default function Controls({ state, handleOptions, handleGuess }: Props) {
+  const [opt1, opt2, opt3, opt4] = handleOptions();
+
+  if (!state.card[0]) return null;
+
+  return (
+    <div className="flex flex-col items-center gap-4 pb-10">
+      {/* Round prompt */}
+      <p
+        className="font-display italic text-lg"
+        style={{ color: 'var(--white-dim)' }}
+      >
+        {ROUND_LABELS[state.round]}
+      </p>
+
+      {/* Button row */}
+      <div className="flex flex-row flex-wrap justify-center">
+        <Button option={opt1} handleGuess={handleGuess} status={state.status} />
+        <Button option={opt2} handleGuess={handleGuess} status={state.status} />
+        {state.round === 4 && (
+          <Button option={opt3} handleGuess={handleGuess} status={state.status} />
+        )}
+        {state.round === 4 && (
+          <Button option={opt4} handleGuess={handleGuess} status={state.status} />
+        )}
+      </div>
+    </div>
+  );
 }

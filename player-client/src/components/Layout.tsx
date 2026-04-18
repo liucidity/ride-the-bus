@@ -1,14 +1,16 @@
-import React from "react"
+import React from 'react';
 
-type Props ={
-  children: React.ReactNode,
-}
+type Props = {
+  children: React.ReactNode;
+};
 
-
-export default function Layout({children}:Props){
-  return(
-    <div className="bg-grey h-screen">
+export default function Layout({ children }: Props) {
+  return (
+    <div
+      className="felt-bg min-h-screen flex flex-col"
+      style={{ minHeight: '100dvh' }}
+    >
       {children}
     </div>
-  )
+  );
 }

@@ -1,17 +1,16 @@
-import ReactCardFlip from "react-card-flip"
+import React from 'react';
 
-type Props ={
-  value:string,
-  image:string,
-}
+type Props = {
+  value: string;
+  image: string;
+};
 
-export default function Card({value, image}: Props) {
+export default function Card({ value, image }: Props) {
   return (
-
-    <img alt={value} src={image} className='m-4'/>
-
-
-
-    
-  )
+    <img
+      alt={value}
+      src={image}
+      className="game-card"
+    />
+  );
 }

@@ -1,8 +1,6 @@
-import React from 'react';
-import PartyControls from './components/PartyControls'
-import { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState } from 'react';
 import { io } from "socket.io-client"
-import PartyButton from "./components/PartyControls"
+import PartyControls from "./components/PartyControls"
 import PlayerCreate from "./components/PlayerCreate"
 
 

@@ -1,9 +1,6 @@
 import './index.css';
 import { useSoloApplicationData } from './helpers/useSoloApplicationData';
-import Button from './components/Button';
-import { useEffect, useState } from 'react';
-import { callbackify } from 'util';
-import {io} from 'socket.io-client'
+import { useEffect } from 'react';
 import SoloGame from './components/SoloGame';
 import Controls from './components/Controls'
 

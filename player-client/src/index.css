@@ -1,3 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg:        #060f09;
+  --surface:   #0e2518;
+  --border:    rgba(45, 186, 110, 0.20);
+  --gold:      #e8b84b;
+  --green:     #2dba6e;
+  --white:     #f8f0e3;
+  --white-dim: rgba(248, 240, 227, 0.60);
+  --red:       #e0403a;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+.felt-bg {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 30% 20%, rgba(45, 186, 110, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, rgba(232, 184, 75, 0.04) 0%, transparent 55%);
+}
+
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}

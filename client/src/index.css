@@ -1,18 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-#message-box {
-  color: white;
+/* ─── Design tokens ───────────────────────────────── */
+:root {
+  --bg:          #060f09;
+  --surface:     #0e2518;
+  --surface-alt: #152e1f;
+  --border:      rgba(45, 186, 110, 0.20);
+  --border-hi:   rgba(45, 186, 110, 0.55);
+  --gold:        #e8b84b;
+  --gold-dim:    rgba(232, 184, 75, 0.15);
+  --green:       #2dba6e;
+  --green-dim:   rgba(45, 186, 110, 0.12);
+  --white:       #f8f0e3;
+  --white-dim:   rgba(248, 240, 227, 0.60);
+  --red:         #e0403a;
 }
 
+/* ─── Base ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--white);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Felt background ─────────────────────────────── */
+.felt-bg {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 20% 15%, rgba(45, 186, 110, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 85%, rgba(232, 184, 75, 0.04) 0%, transparent 55%);
+}
+
+/* ─── Typography helpers ──────────────────────────── */
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* ─── Card styles ─────────────────────────────────── */
+.game-card {
+  border-radius: 10px;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.65));
+  transition: transform 0.2s ease, filter 0.2s ease;
+  width: 80px;
+}
+
+@media (min-width: 480px) {
+  .game-card { width: 96px; }
+}
+
+@media (min-width: 768px) {
+  .game-card { width: 110px; }
+}
+
+/* ─── Floating suit keyframe (used inline) ─────────── */
+@keyframes float-up {
+  0%   { transform: translateY(0)       rotate(0deg);  opacity: 1;   }
+  100% { transform: translateY(-110vh)  rotate(15deg); opacity: 0;   }
+}
+
+/* ─── Message box ─────────────────────────────────── */
+#message-box {
+  color: var(--white);
+  text-align: center;
+}
+
+/* ─── Bar chart ───────────────────────────────────── */
 #bar-chart {
-  width: 1000px;
-  max-height: 250px;
+  width: min(900px, 95vw);
+  max-height: 260px;
   display: flex;
   justify-content: center;
-  bottom: 0;
-  position: absolute;
-  padding-bottom: 2%;
-  /* overflow: auto; */
+  padding-bottom: 1rem;
+}
+
+/* ─── Gold rule ───────────────────────────────────── */
+.gold-line {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+  opacity: 0.35;
 }
