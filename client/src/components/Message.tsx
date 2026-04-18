@@ -1,24 +1,63 @@
-import { statSync } from "fs"
-import React from "react"
+import React from 'react';
 
-type Props={
-  state: any,
-}
+type Props = {
+  state: any;
+};
 
-export default function Message({ state }:Props) {
+const ROUND_PROMPTS: Record<number, string> = {
+  1: 'Is the first card Red or Black?',
+  2: 'Higher or Lower than the first card?',
+  3: 'Inside or Outside the first two cards?',
+  4: 'Guess the suit of the fourth card!',
+};
 
-  const playerGuesses = Object.keys(state.players).map((player) => {
-    return {player, choice: state.players[player].choice}
-  })
+export default function Message({ state }: Props) {
+  const playerGuesses = Object.keys(state.players).map((player) => ({
+    player,
+    choice: state.players[player].choice,
+  }));
 
   return (
-    <div id='message-box'>
-      {state.status === 'reveal' && playerGuesses.map((player) => <h6>{player.player} picked: {player.choice}</h6>)}
-      {state.gameState === 'end' && <h1>{state.winner} has won! 🏆</h1>}
-      {state.status === 'none' && state.round === 1 && <h1>Guess if the first card has a red suit or black suit...</h1>}
-      {state.status === 'none' && state.round === 2 && <h1>Guess if the second card is higher or lower than the first card...</h1>}
-      {state.status === 'none' && state.round === 3 && <h1>Guess if the third card is between or outside the first two cards...</h1>}
-      {state.status === 'none' && state.round === 4 && <h1>Guess the suit of the fourth card...</h1>}
+    <div id="message-box" className="flex flex-col items-center gap-2 py-2">
+      {/* Winner announcement */}
+      {state.gameState === 'end' && (
+        <div
+          className="font-display text-2xl font-bold animate-slide-up"
+          style={{ color: 'var(--gold)', textShadow: '0 0 30px rgba(232,184,75,0.5)' }}
+        >
+          🏆 {state.winner} wins!
+        </div>
+      )}
+
+      {/* Reveal: player choices */}
+      {state.status === 'reveal' && (
+        <div className="flex flex-wrap justify-center gap-2 animate-slide-up">
+          {playerGuesses.map(({ player, choice }) => (
+            <span
+              key={player}
+              className="rounded-full px-3 py-1 text-xs font-semibold tracking-wide"
+              style={{
+                background: 'rgba(255,255,255,0.07)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: 'var(--white)',
+              }}
+            >
+              <span style={{ color: 'var(--gold)' }}>{player}</span>
+              {choice ? ` → ${choice}` : ' —'}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Round prompt */}
+      {state.gameState !== 'end' && state.status === 'none' && state.timer > 0 && (
+        <p
+          className="font-display italic text-base animate-fade-in"
+          style={{ color: 'var(--white-dim)' }}
+        >
+          {ROUND_PROMPTS[state.round]}
+        </p>
+      )}
     </div>
-  )
+  );
 }

@@ -112,19 +112,17 @@ export const useSoloApplicationData = () => {
       })
     }
   }
+  //handle removing card remaining from new deck when shuffled
 
   const drawOrReshuffle = async () => {
     console.log('drawOrReshuffling')
-    if (state.deck.remaining < 1) {
+    if (state.deck.remaining < 4) {
       console.log('old deck', state.deck.deck_id)
       await updateDeck('reshuffle')
-      await updateDeck('draw')
+      await updateDeck('draw', 4)
     } else {
-
-      updateDeck('draw')
+      updateDeck('draw', 4)
     }
-
-
   }
 
   const handleGuess = (choice) => {
@@ -268,7 +266,7 @@ export const useSoloApplicationData = () => {
   }
 
 
-  const updateDeck = (action) => {
+  const updateDeck = (action, round) => {
     if (action === 'new') {
       return axios
         .get('https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
@@ -286,7 +284,7 @@ export const useSoloApplicationData = () => {
     }
     if (action === 'draw') {
       return axios
-        .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`)
+        .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=${round}`)
         .then(res => {
           console.log(action)
           console.log(state)
