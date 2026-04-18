@@ -2,6 +2,9 @@
   "name": "ride-the-bus",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18 <19"
+  },
   "dependencies": {
     "@headlessui/react": "^1.7.19",
     "@heroicons/react": "^2.2.0",
@@ -18,10 +21,10 @@
     "events": "^3.3.0",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
-    "react": "^17.0.2",
+    "react": "^19.2.3",
     "react-card-flip": "^1.2.3",
     "react-chartjs-2": "^5.3.1",
-    "react-dom": "^17.0.2",
+    "react-dom": "^19.2.3",
     "react-router-dom": "^6.30.2",
     "react-scripts": "5.0.1",
     "socket.io-client": "^4.8.1",
