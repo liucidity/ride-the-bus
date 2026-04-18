@@ -10,16 +10,16 @@ importers:
     dependencies:
       '@headlessui/react':
         specifier: ^1.7.19
-        version: 1.7.19(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 1.7.19(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@heroicons/react':
         specifier: ^2.2.0
-        version: 2.2.0(react@17.0.2)
+        version: 2.2.0(react@19.2.5)
       '@testing-library/jest-dom':
         specifier: ^5.17.0
         version: 5.17.0
       '@testing-library/react':
         specifier: ^13.4.0
-        version: 13.4.0(@types/react@17.0.90)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 13.4.0(@types/react@17.0.90)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@testing-library/user-event':
         specifier: ^13.5.0
         version: 13.5.0(@testing-library/dom@8.20.1)
@@ -54,23 +54,23 @@ importers:
         specifier: ^6.3.4
         version: 6.3.4
       react:
-        specifier: ^17.0.2
-        version: 17.0.2
+        specifier: ^19.2.3
+        version: 19.2.5
       react-card-flip:
         specifier: ^1.2.3
-        version: 1.2.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 1.2.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-chartjs-2:
         specifier: ^5.3.1
-        version: 5.3.1(chart.js@4.5.1)(react@17.0.2)
+        version: 5.3.1(chart.js@4.5.1)(react@19.2.5)
       react-dom:
-        specifier: ^17.0.2
-        version: 17.0.2(react@17.0.2)
+        specifier: ^19.2.3
+        version: 19.2.5(react@19.2.5)
       react-router-dom:
         specifier: ^6.30.2
-        version: 6.30.2(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 6.30.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-scripts:
         specifier: 5.0.1
-        version: 5.0.1(@babel/plugin-syntax-flow@7.27.1(@babel/core@7.28.5))(@babel/plugin-transform-react-jsx@7.27.1(@babel/core@7.28.5))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@17.0.2)(type-fest@0.21.3)(typescript@4.9.5)(webpack-cli@6.0.1)
+        version: 5.0.1(@babel/plugin-syntax-flow@7.27.1(@babel/core@7.28.5))(@babel/plugin-transform-react-jsx@7.27.1(@babel/core@7.28.5))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@19.2.5)(type-fest@0.21.3)(typescript@4.9.5)(webpack-cli@6.0.1)
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1
@@ -4717,10 +4717,10 @@ packages:
       typescript:
         optional: true
 
-  react-dom@17.0.2:
-    resolution: {integrity: sha512-s4h96KtLDUQlsENhMn1ar8t2bEa+q/YAtj8pPPdIjPDGBDIVNsrD9aXNWqspUe6AzKCIG0C1HZZLqLV7qpOBGA==}
+  react-dom@19.2.5:
+    resolution: {integrity: sha512-J5bAZz+DXMMwW/wV3xzKke59Af6CHY7G4uYLN1OvBcKEsWOs4pQExj86BBKamxl/Ik5bx9whOrvBlSDfWzgSag==}
     peerDependencies:
-      react: 17.0.2
+      react: ^19.2.5
 
   react-error-overlay@6.1.0:
     resolution: {integrity: sha512-SN/U6Ytxf1QGkw/9ve5Y+NxBbZM6Ht95tuXNMKs8EJyFa/Vy/+Co3stop3KBHARfn/giv+Lj1uUnTfOJ3moFEQ==}
@@ -4763,8 +4763,8 @@ packages:
       typescript:
         optional: true
 
-  react@17.0.2:
-    resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}
+  react@19.2.5:
+    resolution: {integrity: sha512-llUJLzz1zTUBrskt2pwZgLq59AemifIftw4aB7JxOqf1HY2FDaGDxgwpAPVzHU1kdWabH7FauP4i1oEeer2WCA==}
     engines: {node: '>=0.10.0'}
 
   read-cache@1.0.0:
@@ -4960,8 +4960,8 @@ packages:
     resolution: {integrity: sha512-5LBh1Tls8c9xgGjw3QrMwETmTMVk0oFgvrFSvWx62llR2hcEInrKNZ2GZCCuuy2lvWrdl5jhbpeqc5hRYKFOcw==}
     engines: {node: '>=10'}
 
-  scheduler@0.20.2:
-    resolution: {integrity: sha512-2eWfGgAqqWFGqtdMmcL5zCMK1U8KlXv8SQFGglL3CEtd0aDVDWgeF/YoCmvln55m5zSk3J/20hTaSBeSObsQDQ==}
+  scheduler@0.27.0:
+    resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
 
   schema-utils@2.7.0:
     resolution: {integrity: sha512-0ilKFI6QQF5nxDZLFn2dMjvc4hjg/Wkg7rHd3jK6/A4a1Hl9VFdQWvgB1UMGoU94pad1P/8N7fMcEnLnSiju8A==}
@@ -6847,16 +6847,16 @@ snapshots:
 
   '@eslint/js@8.57.1': {}
 
-  '@headlessui/react@1.7.19(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+  '@headlessui/react@1.7.19(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@tanstack/react-virtual': 3.13.13(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      '@tanstack/react-virtual': 3.13.13(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       client-only: 0.0.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
-  '@heroicons/react@2.2.0(react@17.0.2)':
+  '@heroicons/react@2.2.0(react@19.2.5)':
     dependencies:
-      react: 17.0.2
+      react: 19.2.5
 
   '@humanwhocodes/config-array@0.13.0':
     dependencies:
@@ -7261,11 +7261,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/react-virtual@3.13.13(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+  '@tanstack/react-virtual@3.13.13(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@tanstack/virtual-core': 3.13.13
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
   '@tanstack/virtual-core@3.13.13': {}
 
@@ -7292,13 +7292,13 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
 
-  '@testing-library/react@13.4.0(@types/react@17.0.90)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+  '@testing-library/react@13.4.0(@types/react@17.0.90)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       '@babel/runtime': 7.28.4
       '@testing-library/dom': 8.20.1
       '@types/react-dom': 18.3.7(@types/react@17.0.90)
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
     transitivePeerDependencies:
       - '@types/react'
 
@@ -11343,15 +11343,15 @@ snapshots:
       regenerator-runtime: 0.13.11
       whatwg-fetch: 3.6.20
 
-  react-card-flip@1.2.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-card-flip@1.2.3(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
-  react-chartjs-2@5.3.1(chart.js@4.5.1)(react@17.0.2):
+  react-chartjs-2@5.3.1(chart.js@4.5.1)(react@19.2.5):
     dependencies:
       chart.js: 4.5.1
-      react: 17.0.2
+      react: 19.2.5
 
   react-dev-utils@12.0.1(eslint@8.57.1)(typescript@4.9.5)(webpack@5.104.1):
     dependencies:
@@ -11387,12 +11387,10 @@ snapshots:
       - supports-color
       - vue-template-compiler
 
-  react-dom@17.0.2(react@17.0.2):
+  react-dom@19.2.5(react@19.2.5):
     dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
-      react: 17.0.2
-      scheduler: 0.20.2
+      react: 19.2.5
+      scheduler: 0.27.0
 
   react-error-overlay@6.1.0: {}
 
@@ -11404,19 +11402,19 @@ snapshots:
 
   react-refresh@0.11.0: {}
 
-  react-router-dom@6.30.2(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-router-dom@6.30.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
       '@remix-run/router': 1.23.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
-      react-router: 6.30.2(react@17.0.2)
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
+      react-router: 6.30.2(react@19.2.5)
 
-  react-router@6.30.2(react@17.0.2):
+  react-router@6.30.2(react@19.2.5):
     dependencies:
       '@remix-run/router': 1.23.1
-      react: 17.0.2
+      react: 19.2.5
 
-  react-scripts@5.0.1(@babel/plugin-syntax-flow@7.27.1(@babel/core@7.28.5))(@babel/plugin-transform-react-jsx@7.27.1(@babel/core@7.28.5))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@17.0.2)(type-fest@0.21.3)(typescript@4.9.5)(webpack-cli@6.0.1):
+  react-scripts@5.0.1(@babel/plugin-syntax-flow@7.27.1(@babel/core@7.28.5))(@babel/plugin-transform-react-jsx@7.27.1(@babel/core@7.28.5))(@types/babel__core@7.20.5)(eslint@8.57.1)(react@19.2.5)(type-fest@0.21.3)(typescript@4.9.5)(webpack-cli@6.0.1):
     dependencies:
       '@babel/core': 7.28.5
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.17(react-refresh@0.11.0)(type-fest@0.21.3)(webpack-dev-server@4.15.2)(webpack@5.104.1)
@@ -11450,7 +11448,7 @@ snapshots:
       postcss-normalize: 10.0.1(browserslist@4.28.1)(postcss@8.5.6)
       postcss-preset-env: 7.8.3(postcss@8.5.6)
       prompts: 2.4.2
-      react: 17.0.2
+      react: 19.2.5
       react-app-polyfill: 3.0.0
       react-dev-utils: 12.0.1(eslint@8.57.1)(typescript@4.9.5)(webpack@5.104.1)
       react-refresh: 0.11.0
@@ -11505,10 +11503,7 @@ snapshots:
       - webpack-plugin-serve
       - yaml
 
-  react@17.0.2:
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
+  react@19.2.5: {}
 
   read-cache@1.0.0:
     dependencies:
@@ -11703,10 +11698,7 @@ snapshots:
     dependencies:
       xmlchars: 2.2.0
 
-  scheduler@0.20.2:
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
+  scheduler@0.27.0: {}
 
   schema-utils@2.7.0:
     dependencies:
