@@ -19,9 +19,11 @@ const io = socketIo(server, {
 
 io.on("connection", (socket) => {
   console.log("client connected: ", socket.id);
+  console.log("Sockets in room 'mainRoom':", io.sockets.adapter.rooms.get('mainRoom')?.size || 0);
 
   const room = 'mainRoom'
   socket.join(room)
+  console.log("After join - Sockets in room 'mainRoom':", io.sockets.adapter.rooms.get('mainRoom')?.size || 0);
 
   socket.on("enterRoom", ({ username }, callback) => {
     console.log('testing ID', username, socket.id)
@@ -36,6 +38,49 @@ io.on("connection", (socket) => {
   socket.on("buttonPress", (player, choice) => {
     console.log(player, choice);
     socket.to(room).emit("buttonPress", player, choice);
+  });
+
+  socket.on("gameState", (gs) => {
+    socket.to(room).emit("gameState", gs);
+  });
+
+  socket.on("lap", (lap, maxLaps) => {
+    socket.to(room).emit("lap", lap, maxLaps);
+  });
+
+  socket.on("handUpdate", (player, hand) => {
+    socket.to(room).emit("handUpdate", player, hand);
+  });
+
+  // Pyramid phase relay events
+  socket.on("pyramidCardFlip", (cardIndex) => {
+    socket.to(room).emit("pyramidCardFlip", cardIndex);
+  });
+
+  // Pyramid declaration phase: host → players (new card flipped, declare window open)
+  socket.on("pyramidDeclarePhase", (cardIndex, card, sips, playerNames) => {
+    socket.to(room).emit("pyramidDeclarePhase", cardIndex, card, sips, playerNames);
+  });
+
+  // Player declaration: player → server → host
+  socket.on("pyramidDeclare", (player, cardCode, cardGolden, target) => {
+    socket.to(room).emit("pyramidDeclare", player, cardCode, cardGolden, target);
+  });
+
+  // Resolution results: host → players (for personal notifications)
+  socket.on("pyramidResolution", (events) => {
+    socket.to(room).emit("pyramidResolution", events);
+  });
+
+  // Player pass: player → server → host (so host can count all-done)
+  socket.on("pyramidPass", () => {
+    socket.to(room).emit("pyramidPass");
+  });
+
+  socket.on("playerStats", (stats) => {
+    console.log("Server received playerStats from", socket.id, stats);
+    socket.to(room).emit("playerStats", stats);
+    console.log("Server relayed playerStats to room", room);
   });
 
   socket.on("disconnect", (reason) => {

@@ -74,6 +74,10 @@ module.exports = {
           '0%, 100%': { transform: 'scale(1)' },
           '50%':      { transform: 'scale(1.15)' },
         },
+        'card-shuffle': {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%':      { transform: 'translateY(-10px)' },
+        },
       },
       animation: {
         'float-up':    'float-up linear infinite',
@@ -83,7 +87,8 @@ module.exports = {
         'glow-pulse':  'glow-pulse 2.5s ease-in-out infinite',
         'gold-pulse':  'gold-pulse 2.5s ease-in-out infinite',
         ping:          'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
-        'timer-danger':'timer-danger 0.6s ease-in-out infinite',
+        'timer-danger':  'timer-danger 0.6s ease-in-out infinite',
+        'card-shuffle':  'card-shuffle 0.5s ease-in-out infinite',
       },
     },
   },

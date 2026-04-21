@@ -1,8 +1,5 @@
 import axios from "axios";
-import { defaultMaxListeners } from "events";
-import { useReducer, useState } from "react";
-import compareCardSuits from './suitsHelper'
-import findAndDeletePlayer from "./playersHelper";
+import { useReducer } from "react";
 
 export const usePartyApplicationData = () => {
   const NEW_DECK = "NEW_DECK";
@@ -14,16 +11,22 @@ export const usePartyApplicationData = () => {
   const STATUS = "STATUS";
   const SELECTION = "SELECTION";
   const SET_TIMER = 'SET_TIMER';
-  const ADD_POINT = 'ADD_POINT';
+  const ADD_SIPS = 'ADD_SIPS';
+  const ADD_TO_HAND = 'ADD_TO_HAND';
   const CREATE_PLAYER = 'CREATE_PLAYER';
   const DISCONNECT_PLAYER = "DISCONNECT_PLAYER";
   const SET_ROOM_ID = 'SET_ROOM_ID';
   const SET_GAME_STATE = 'SET_GAME_STATE';
-  const RESET_STATE = 'RESET_STATE'
+  const RESET_STATE = 'RESET_STATE';
+  const SET_PYRAMID_CARDS = 'SET_PYRAMID_CARDS';
+  const PYRAMID_NEXT = 'PYRAMID_NEXT';
+  const FINISH_PYRAMID = 'FINISH_PYRAMID';
+  const SET_LAP = 'SET_LAP';
 
   const reducer = (state, action) => {
     const reducers = {
       ROUND: (state) => ({ ...state, round: action.round }),
+      SET_LAP: (state) => ({ ...state, lap: action.lap }),
       NEW_DECK: (state) => ({ ...state, deck: action.deck }),
       DRAW: (state) => ({
         ...state,
@@ -47,16 +50,22 @@ export const usePartyApplicationData = () => {
           [action.player]: { ...state.players[action.player], choice: action.selection },
         },
       }),
-
-      SET_TIMER: (state) => ({
-        ...state,
-        timer: action.timer
-      }),
-      ADD_POINT: (state) => ({
+      SET_TIMER: (state) => ({ ...state, timer: action.timer }),
+      ADD_SIPS: (state) => ({
         ...state,
         players: {
           ...state.players,
-          [action.player]: { ...state.players[action.player], points: action.points }
+          [action.player]: {
+            ...state.players[action.player],
+            sips: (state.players[action.player]?.sips || 0) + action.amount
+          }
+        }
+      }),
+      ADD_TO_HAND: (state) => ({
+        ...state,
+        players: {
+          ...state.players,
+          [action.player]: { ...state.players[action.player], hand: action.hand }
         }
       }),
       CREATE_PLAYER: (state) => ({
@@ -64,327 +73,297 @@ export const usePartyApplicationData = () => {
         players: {
           ...state.players,
           [action.username]: action.player
-
         }
       }),
       DISCONNECT_PLAYER: (state) => ({
         ...state,
-        players: { ...action.players }
+        players: Object.fromEntries(
+          Object.entries(state.players).filter(([, p]) => p.id !== action.socketId)
+        ),
       }),
-      SET_ROOM_ID: (state) => ({
-        ...state,
-        room: action.id
-      }),
+      SET_ROOM_ID: (state) => ({ ...state, room: action.id }),
       SET_GAME_STATE: (state) => ({
         ...state,
         gameState: action.gameState,
         winner: action.winner || null
       }),
-      RESET_STATE: (state) => action.state
+      RESET_STATE: () => action.state,
+      SET_PYRAMID_CARDS: (state) => ({
+        ...state,
+        pyramidCards: action.cards,
+        pyramidIndex: 0,
+        pyramidSips: action.sips,
+        gameState: 'pyramid',
+      }),
+      PYRAMID_NEXT: (state) => ({
+        ...state,
+        pyramidIndex: state.pyramidIndex + 1,
+      }),
+      FINISH_PYRAMID: (state) => ({
+        ...state,
+        round: 1,
+        lap: 1,
+        gameState: 'end',
+        winner: action.winner || null,
+        players: Object.fromEntries(
+          Object.entries(state.players).map(([name, p]) => [name, { ...p, hand: [] }])
+        ),
+      }),
     };
-    return reducers[action.type](state) || reducers.default();
+    return reducers[action.type](state);
   };
 
   const [state, dispatch] = useReducer(reducer, {
     round: 1,
+    lap: 1,
+    maxLaps: 3,
     faces: [],
     deck: {},
     card: {},
-    status: "none",
+    status: 'none',
     players: {},
     timer: -1,
-    gameState: 'paused', // can be running, paused, or end
+    gameState: 'paused',
+    pyramidCards: [],
+    pyramidIndex: -1,
+    pyramidSips: [],
   });
 
   const resetState = (state) => {
-    console.log('reset state', state)
-    dispatch({
-      type: RESET_STATE,
-      state: state
-    })
-  }
+    dispatch({ type: RESET_STATE, state });
+  };
 
   const createPlayer = (username, socketId) => {
     dispatch({
       type: CREATE_PLAYER,
-      username: username,
-      player: { points: 0, id: socketId }
-    })
-  }
+      username,
+      player: { id: socketId, choice: '', sips: 0, hand: [] }
+    });
+  };
 
   const disconnectPlayer = (socketId) => {
-    const players = findAndDeletePlayer(state.players, socketId)
-    dispatch({
-      type: DISCONNECT_PLAYER,
-      players: players,
-    })
-  }
+    dispatch({ type: DISCONNECT_PLAYER, socketId });
+  };
 
   const gameRound = (action) => {
     if (action === "nextRound") {
-      dispatch({
-        type: ROUND,
-        round: (state.round += 1),
-      });
+      dispatch({ type: ROUND, round: (state.round += 1) });
     }
     if (action === "reset") {
-      dispatch({
-        type: ROUND,
-        round: 1,
-      });
+      dispatch({ type: ROUND, round: 1 });
     }
   };
 
   const handleOptions = () => {
     switch (state.round) {
-      case 1:
-        return ["Red", "Black"];
-      case 2:
-        return ["Higher", "Lower"];
-      case 3:
-        return ["Inside", "Outside"];
-      case 4:
-        return ["Diamond", "Club", "Heart", "Spade"];
-      default:
-        return ["error", "error"];
+      case 1: return ["Red", "Black"];
+      case 2: return ["Higher", "Lower"];
+      case 3: return ["→←", "←→"];
+      case 4: return ["Diamond", "Club", "Heart", "Spade"];
+      default: return ["error", "error"];
     }
   };
 
   const handleFaces = (action) => {
     if (action === "empty") {
-      dispatch({
-        type: EMPTY_FACES,
-        faces: [],
-      });
-      console.log("tried to reset faces...", state.faces);
+      dispatch({ type: EMPTY_FACES, faces: [] });
     }
     if (action === "add") {
-      dispatch({
-        type: ADD_FACES,
-        faces: true,
-      });
+      dispatch({ type: ADD_FACES, faces: true });
     }
   };
 
   const handleStatus = (action) => {
     if (action === "reveal") {
-      dispatch({
-        type: STATUS,
-        status: "reveal",
-      });
+      dispatch({ type: STATUS, status: "reveal" });
       setTimeout(() => {
-        dispatch({
-          type: STATUS,
-          status: "none",
-        });
+        dispatch({ type: STATUS, status: "none" });
       }, 4000);
     }
     if (action === "reset") {
-      dispatch({
-        type: STATUS,
-        action: "none",
-      });
+      dispatch({ type: STATUS, status: "none" });
     }
     if (action === "end") {
-      dispatch({
-        type: STATUS,
-        action: "end"
-      })
+      dispatch({ type: STATUS, status: "end" });
     }
   };
 
   const drawOrReshuffle = async () => {
-    console.log("drawOrReshuffling");
-    if (state.deck.remaining < 1) {
-      console.log("old deck", state.deck.deck_id);
-      await updateDeck("reshuffle");
-      await updateDeck("draw");
-    } else {
-      updateDeck("draw");
-    }
+    await updateDeck("draw");
   };
 
   const handleSelection = (player, choice) => {
-    dispatch({
-      type: SELECTION,
-      player: player,
-      selection: choice,
-    });
-    console.log("player and choice", state.players);
+    dispatch({ type: SELECTION, player, selection: choice });
   };
 
-  const addPoint = (player, amount) => {
+  const addSips = (player, amount) => {
+    dispatch({ type: ADD_SIPS, player, amount });
+  };
+
+  // Stores full card object {value, suit, code, image, golden?}
+  const addToHand = (player, card) => {
+    state.players[player].hand.push(card);
     dispatch({
-      type: ADD_POINT,
-      player: player,
-      points: state.players[player].points += amount
-    })
+      type: ADD_TO_HAND,
+      player,
+      hand: [...state.players[player].hand]
+    });
+  };
 
-    // check if this player has scored more than 10 points
-    if (state.players[player].points >= 10) {
-      endGameStatus(player)
-      handleStatus("end")
-
+  const isCorrectGuess = (round, choice, card) => {
+    switch (round) {
+      case 1:
+        return (choice === "Red" && (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")) ||
+               (choice === "Black" && (card[0].suit === "CLUBS" || card[0].suit === "SPADES"));
+      case 2:
+        if (choice === "Higher" && card[1].value > card[0].value) return true;
+        if (choice === "Lower" && card[1].value < card[0].value) return true;
+        return false;
+      case 3: {
+        const high = Math.max(card[0].value, card[1].value);
+        const low = Math.min(card[0].value, card[1].value);
+        if (choice === "Inside" && card[2].value < high && card[2].value > low) return true;
+        if (choice === "Outside" && (card[2].value > high || card[2].value < low)) return true;
+        return false;
+      }
+      case 4:
+        return (choice === "Diamond" && card[3].suit === "DIAMONDS") ||
+               (choice === "Club" && card[3].suit === "CLUBS") ||
+               (choice === "Heart" && card[3].suit === "HEARTS") ||
+               (choice === "Spade" && card[3].suit === "SPADES");
+      default:
+        return false;
     }
-  }
-  const startGameStatus = () => {
-    dispatch({
-      type: SET_GAME_STATE,
-      gameState: "running"
-    })
-  }
-  const endGameStatus = (player) => {
-    dispatch({
-      type: SET_GAME_STATE,
-      gameState: "end",
-      winner: `${player}`
-    })
-  }
-  const pauseGameStatus = () => {
-    dispatch({
-      type: SET_GAME_STATE,
-      gameState: "paused"
-    })
-  }
+  };
 
+  const startGameStatus = () => {
+    dispatch({ type: SET_GAME_STATE, gameState: "running" });
+  };
+
+  const pauseGameStatus = () => {
+    dispatch({ type: SET_GAME_STATE, gameState: "paused" });
+  };
 
   const handleRound = (players) => {
-    console.log('handleRound functioning running!', state.players)
-    let round = state.round;
-    let card = state.card;
+    const round = state.round;
+    const lap = state.lap;
+    const maxLaps = state.maxLaps;
+    const card = state.card;
     handleFaces("add");
-    for (let player in players) {
-      let choice = players[player].choice;
-      switch (round) {
-        case 1:
-          if (
-            choice === "Red" &&
-            (card[0].suit === "HEARTS" || card[0].suit === "DIAMONDS")
-          ) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else if (
-            choice === "Black" &&
-            (card[0].suit === "CLUBS" || card[0].suit === "SPADES")
-          ) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else {
-            handleStatus("reveal");
-          }
-          break;
-        case 2:
-          if (choice === "Higher" && card[1].value > card[0].value) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else if (choice === "Lower" && card[1].value < card[0].value) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else if (choice === 'Higher' && card[1].value === card[0].value && compareCardSuits(card[1].code, card[0].code)) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else if (choice === 'Lower' && card[1].value === card[0].value && !compareCardSuits(card[1].code, card[0].code)) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else {
-            handleStatus("reveal");
-          }
-          break;
-        case 3:
-          let high = Math.max(card[0].value, card[1].value);
-          let low = Math.min(card[0].value, card[1].value);
-          if (
-            choice === "Inside" &&
-            card[2].value < high &&
-            card[2].value > low
-          ) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else if (
-            choice === "Outside" &&
-            (card[2].value > high || card[2].value < low)
-          ) {
-            handleStatus("reveal");
-            addPoint(player, 1)
-          } else {
-            handleStatus("reveal");
-          }
-          break;
-        case 4:
-          if (choice === "Diamond" && card[3].suit === "DIAMONDS") {
-            handleStatus("reveal");
-            addPoint(player, 3)
-          } else if (choice === "Club" && card[3].suit === "CLUBS") {
-            handleStatus("reveal");
-            addPoint(player, 3)
-          } else if (choice === "Heart" && card[3].suit === "HEARTS") {
-            handleStatus("reveal");
-            addPoint(player, 3)
-          } else if (choice === "Spade" && card[3].suit === "SPADES") {
-            handleStatus("reveal");
-            addPoint(player, 3)
-          } else {
-            handleStatus("reveal");
-          }
-          break;
-        default:
+    handleStatus("reveal");
 
-      }
-      // reset selection between rounds
-    }
-    console.log('before set time out', state)
-    setTimeout(() => {
-      for (let player in players) {
-        handleSelection(player, '')
-      };
-      if (round < 4) {
-        gameRound('nextRound')
-        setTimer(10)
+    for (let player in players) {
+      const choice = players[player].choice;
+      const correct = isCorrectGuess(round, choice, card);
+
+      if (correct) {
+        // Round 4 cards are golden — can be used as shields in pyramid phase
+        const wonCard = { ...card[round - 1], golden: round === 4 };
+        addToHand(player, wonCard);
       } else {
-        gameRound("reset");
-        handleFaces("empty");
-        drawOrReshuffle();
-        setTimer(10)
+        addSips(player, 1);
+      }
+    }
+
+    setTimeout(async () => {
+      for (let player in players) handleSelection(player, '');
+      if (round < 4) {
+        gameRound('nextRound');
+        setTimer(-1);
+      } else if (lap < maxLaps) {
+        state.lap += 1;
+        dispatch({ type: SET_LAP, lap: state.lap });
+        dispatch({ type: ROUND, round: (state.round = 1) });
+        handleFaces('empty');
+        await drawOrReshuffle();
+        setTimer(-1);
+      } else {
+        enterPyramidPhase();
       }
     }, 4000);
   };
 
-  const setTimer = (duration) => {
+  // Compute sip values for a pyramid of n cards using triangular row layout.
+  // Rows from bottom: row 1 = 1 sip, row 2 = 2 sips, ..., row k = k sips.
+  // Returns array of length n where index i gets sip value of its row.
+  const computePyramidSips = (n) => {
+    // Find number of complete rows: largest k where k*(k+1)/2 <= n
+    let k = 0;
+    while ((k + 1) * (k + 2) / 2 <= n) k++;
+    // Assign sips: bottom row (largest) = 1 sip, top row = k sips
+    // Cards are ordered bottom-to-top: indices 0..(rowSize-1) = row 1, etc.
+    const sips = [];
+    for (let row = 1; row <= k; row++) {
+      const rowSize = k - row + 1;
+      for (let i = 0; i < rowSize; i++) {
+        sips.push(row);
+      }
+    }
+    // Fill any remainder with max sip value
+    while (sips.length < n) sips.push(k);
+    return sips;
+  };
+
+  const enterPyramidPhase = () => {
+    dispatch({ type: SET_GAME_STATE, gameState: 'pyramid' });
+
+    // Build pyramid deck from all cards in players' hands (duplicates allowed)
+    const allCards = Object.values(state.players).flatMap(p => p.hand || []);
+
+    if (allCards.length === 0) {
+      // No cards earned — skip pyramid
+      finishPyramidPhase();
+      return;
+    }
+
+    // Fisher-Yates shuffle
+    const shuffled = [...allCards];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    const pyramidSips = computePyramidSips(shuffled.length);
+
     dispatch({
-      type: SET_TIMER,
-      timer: duration
-    })
-  }
+      type: SET_PYRAMID_CARDS,
+      cards: shuffled,
+      sips: pyramidSips,
+    });
+  };
+
+  const pyramidFlipNext = () => {
+    dispatch({ type: PYRAMID_NEXT });
+  };
+
+  const finishPyramidPhase = () => {
+    handleFaces("empty");
+    // Winner = player with fewest sips
+    const players = state.players;
+    const winner = Object.keys(players).reduce((best, player) => {
+      if (!best) return player;
+      return (players[player]?.sips || 0) < (players[best]?.sips || 0) ? player : best;
+    }, null);
+    dispatch({ type: FINISH_PYRAMID, winner });
+  };
+
+  const setTimer = (duration) => {
+    dispatch({ type: SET_TIMER, timer: duration });
+  };
 
   const updateDeck = (action) => {
     if (action === "new") {
       return axios
-        .get(
-          "https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
-        )
+        .get("https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
         .then((res) => {
-          console.log(action);
-          console.log(state);
-          dispatch({
-            type: NEW_DECK,
-            deck: res.data,
-          });
+          dispatch({ type: NEW_DECK, deck: res.data });
         })
-        .catch((err) => {
-          console.log("Error loading: ", err);
-        });
+        .catch((err) => console.log("Error loading: ", err));
     }
     if (action === "draw") {
       return axios
-        .get(
-          `https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`
-        )
+        .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/draw/?count=4`)
         .then((res) => {
-          console.log(action);
-          console.log(state);
-          console.log(res.data.cards);
-          console.log(res.data);
-
           res.data.cards.map((card) => {
             if (card.value === "ACE") card.value = "14";
             if (card.value === "KING") card.value = "13";
@@ -398,46 +377,30 @@ export const usePartyApplicationData = () => {
             remaining: (state.deck.remaining = res.data.remaining),
           });
         })
-        .catch((err) => {
-          console.log("Error loading: ", err);
-        });
+        .catch((err) => console.log("Error loading: ", err));
     }
     if (action === "reshuffle") {
       return axios
-        .get(
-          `https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/shuffle/`
-        )
+        .get(`https://www.deckofcardsapi.com/api/deck/${state.deck.deck_id}/shuffle/`)
         .then((res) => {
-          console.log(action);
-          console.log(state);
-          console.log("reshuffle data", res.data);
-          dispatch({
-            type: RESHUFFLE,
-            remaining: res.data.remaining,
-          });
+          dispatch({ type: RESHUFFLE, remaining: res.data.remaining });
         })
-        .catch((err) => {
-          console.log(err);
-        });
+        .catch((err) => console.log(err));
     }
   };
 
   const setRoomId = () => {
-    dispatch({
-      type: SET_ROOM_ID,
-      id: generateRandomID(4)
-    })
-  }
+    dispatch({ type: SET_ROOM_ID, id: generateRandomID(4) });
+  };
 
   const generateRandomID = (length) => {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
-  }
+  };
 
   return {
     updateDeck,
@@ -453,6 +416,11 @@ export const usePartyApplicationData = () => {
     setRoomId,
     startGameStatus,
     pauseGameStatus,
-    resetState
+    resetState,
+    addSips,
+    addToHand,
+    pyramidFlipNext,
+    finishPyramidPhase,
+    enterPyramidPhase,
   };
 };

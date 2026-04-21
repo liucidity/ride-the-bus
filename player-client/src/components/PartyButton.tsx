@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 type Props = {
-  option: any;
-  sendPress: any;
-  player: string;
+  option: string;
+  isSelected: boolean;
+  onPress: (option: string) => void;
 };
 
 const SUIT_ICONS: Record<string, string> = {
@@ -15,8 +15,8 @@ const SUIT_ICONS: Record<string, string> = {
   Black:   '⚫',
   Higher:  '↑',
   Lower:   '↓',
-  Inside:  '↔',
-  Outside: '↕',
+  Inside:  '→←',
+  Outside: '←→',
 };
 
 const SUIT_ACCENT: Record<string, string> = {
@@ -28,21 +28,16 @@ const SUIT_ACCENT: Record<string, string> = {
   Black:   'var(--white)',
 };
 
-export default function PartyButton({ option, player, sendPress }: Props) {
+export default function PartyButton({ option, isSelected, onPress }: Props) {
   const [pressed, setPressed] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const accent = SUIT_ACCENT[option] ?? 'var(--green)';
   const icon = SUIT_ICONS[option] ?? '';
 
   const handlePress = () => {
-    if (sent) return;
     setPressed(true);
-    setSent(true);
-    sendPress(player, option);
+    onPress(option);
     setTimeout(() => setPressed(false), 250);
-    // Allow re-press after 2s (in case round changes)
-    setTimeout(() => setSent(false), 2500);
   };
 
   return (
@@ -54,17 +49,17 @@ export default function PartyButton({ option, player, sendPress }: Props) {
         maxWidth: '180px',
         minHeight: '80px',
         margin: '6px',
-        background: sent
+        background: isSelected
           ? 'rgba(45, 186, 110, 0.18)'
           : 'rgba(255, 255, 255, 0.04)',
         border: `1.5px solid ${
-          sent
+          isSelected
             ? 'rgba(45, 186, 110, 0.55)'
             : 'rgba(255, 255, 255, 0.12)'
         }`,
-        color: sent ? 'var(--green)' : accent,
+        color: isSelected ? 'var(--green)' : accent,
         transform: pressed ? 'scale(0.94)' : 'scale(1)',
-        boxShadow: sent ? '0 4px 20px rgba(45, 186, 110, 0.20)' : 'none',
+        boxShadow: isSelected ? '0 4px 20px rgba(45, 186, 110, 0.20)' : 'none',
         cursor: 'pointer',
         WebkitTapHighlightColor: 'transparent',
         letterSpacing: '0.1em',
@@ -73,9 +68,9 @@ export default function PartyButton({ option, player, sendPress }: Props) {
     >
       <span
         className="block text-2xl mb-1"
-        style={{ opacity: sent ? 0.6 : 1 }}
+        style={{ opacity: isSelected ? 0.6 : 1 }}
       >
-        {sent ? '✓' : icon}
+        {isSelected ? '✓' : icon}
       </span>
       {option}
     </button>
