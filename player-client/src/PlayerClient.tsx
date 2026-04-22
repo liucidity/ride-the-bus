@@ -24,6 +24,7 @@ export default function PlayerClient() {
   const [playerReady, setPlayerReady] = useState(false)
   const [gameState, setGameState] = useState('paused')
   const [hand, setHand] = useState<HandCard[]>([])
+  const handRef = useRef<HandCard[]>([])
   const [mySips, setMySips] = useState(0)
   const [myHandLength, setMyHandLength] = useState(0)
   const [leaderboard, setLeaderboard] = useState<Record<string, { sips: number; handLength: number }>>({})
@@ -79,6 +80,7 @@ export default function PlayerClient() {
 
     socket.on('handUpdate', (targetPlayer: string, updatedHand: HandCard[]) => {
       if (targetPlayer === usernameRef.current) {
+        handRef.current = updatedHand
         setHand(updatedHand)
       }
     })
@@ -102,9 +104,15 @@ export default function PlayerClient() {
       setDeclarationPyramidCard(card)
       setDeclarationSips(sips)
       setDeclarationAllPlayers(playerNames)
-      setDeclared(false)
       setResolutionPhase(false)
       setDeclarationPhase(true)
+      // Auto-pass if hand is empty
+      if (handRef.current.length === 0) {
+        socket.emit('pyramidPass')
+        setDeclared(true)
+      } else {
+        setDeclared(false)
+      }
     })
 
     socket.on('pyramidResolution', (events: ResEvent[]) => {

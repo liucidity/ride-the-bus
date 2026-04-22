@@ -12,7 +12,7 @@ export default function Timer({ isActive, handleRound, state, setTimer }: Props)
   const danger = duration <= 3;
 
   useEffect(() => {
-    const timer = duration > -1 && setInterval(() => setTimer(duration - 1), 1000);
+    const timer = duration > 0 && setInterval(() => setTimer(duration - 1), 1000);
     if (duration === 0) {
       handleRound(state.players);
     }

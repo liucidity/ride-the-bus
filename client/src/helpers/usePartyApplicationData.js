@@ -22,6 +22,8 @@ export const usePartyApplicationData = () => {
   const PYRAMID_NEXT = 'PYRAMID_NEXT';
   const FINISH_PYRAMID = 'FINISH_PYRAMID';
   const SET_LAP = 'SET_LAP';
+  const REMOVE_FROM_HAND = 'REMOVE_FROM_HAND';
+  const SET_DRINKING_BUDDY = 'SET_DRINKING_BUDDY';
 
   const reducer = (state, action) => {
     const reducers = {
@@ -99,11 +101,31 @@ export const usePartyApplicationData = () => {
         ...state,
         pyramidIndex: state.pyramidIndex + 1,
       }),
+      REMOVE_FROM_HAND: (state) => {
+        const hand = state.players[action.player]?.hand || [];
+        const idx = hand.findIndex(c => c.code === action.cardCode);
+        if (idx === -1) return state;
+        const newHand = [...hand.slice(0, idx), ...hand.slice(idx + 1)];
+        return {
+          ...state,
+          players: {
+            ...state.players,
+            [action.player]: { ...state.players[action.player], hand: newHand }
+          }
+        };
+      },
+      SET_DRINKING_BUDDY: (state) => {
+        const buddies = { ...state.drinkingBuddies };
+        buddies[action.player] = action.buddy;
+        buddies[action.buddy] = action.player;
+        return { ...state, drinkingBuddies: buddies };
+      },
       FINISH_PYRAMID: (state) => ({
         ...state,
         round: 1,
         lap: 1,
         gameState: 'end',
+        drinkingBuddies: {},
         winner: action.winner || null,
         players: Object.fromEntries(
           Object.entries(state.players).map(([name, p]) => [name, { ...p, hand: [] }])
@@ -127,6 +149,7 @@ export const usePartyApplicationData = () => {
     pyramidCards: [],
     pyramidIndex: -1,
     pyramidSips: [],
+    drinkingBuddies: {},
   });
 
   const resetState = (state) => {
@@ -208,6 +231,23 @@ export const usePartyApplicationData = () => {
       player,
       hand: [...state.players[player].hand]
     });
+  };
+
+  const removeFromHand = (player, cardCode) => {
+    dispatch({ type: REMOVE_FROM_HAND, player, cardCode });
+  };
+
+  const addCardsToHand = (player, cards) => {
+    cards.forEach(c => state.players[player].hand.push(c));
+    dispatch({
+      type: ADD_TO_HAND,
+      player,
+      hand: [...state.players[player].hand]
+    });
+  };
+
+  const setDrinkingBuddy = (player, buddy) => {
+    dispatch({ type: SET_DRINKING_BUDDY, player, buddy });
   };
 
   const isCorrectGuess = (round, choice, card) => {
@@ -323,11 +363,14 @@ export const usePartyApplicationData = () => {
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
-    const pyramidSips = computePyramidSips(shuffled.length);
+    // Pyramid must be exactly 6 or 10 cards
+    const targetCount = shuffled.length >= 10 ? 10 : 6;
+    const pyramidCards = shuffled.slice(0, targetCount);
+    const pyramidSips = computePyramidSips(targetCount);
 
     dispatch({
       type: SET_PYRAMID_CARDS,
-      cards: shuffled,
+      cards: pyramidCards,
       sips: pyramidSips,
     });
   };
@@ -419,6 +462,9 @@ export const usePartyApplicationData = () => {
     resetState,
     addSips,
     addToHand,
+    addCardsToHand,
+    removeFromHand,
+    setDrinkingBuddy,
     pyramidFlipNext,
     finishPyramidPhase,
     enterPyramidPhase,

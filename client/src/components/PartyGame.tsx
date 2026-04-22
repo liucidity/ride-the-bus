@@ -18,7 +18,11 @@ type ResEvent =
   | { type: 'assign'; from: string; to: string; amount: number }
   | { type: 'redirect'; from: string; to: string; amount: number }
   | { type: 'protect'; player: string; target: string }
-  | { type: 'blocked'; from: string; to: string; amount: number };
+  | { type: 'blocked'; from: string; to: string; amount: number }
+  | { type: 'shot'; from: string; target: string }
+  | { type: 'sipAll'; from: string; except: string }
+  | { type: 'buddy'; player: string; target: string }
+  | { type: 'gift'; from: string; to: string; count: number };
 
 // ── Dynamic pyramid layout ──────────────────────────────────────────────────────
 // Returns rows top-to-bottom (highest sips at top) for n cards.
@@ -46,32 +50,65 @@ function buildPyramidRows(n: number): { indices: number[]; sips: number }[] {
   return rows.reverse();
 }
 
+// ── Value → deck API code ───────────────────────────────────────────────────────
+function valueToApiCode(value: number): string {
+  if (value === 14) return 'A';
+  if (value === 13) return 'K';
+  if (value === 12) return 'Q';
+  if (value === 11) return 'J';
+  if (value === 10) return '0';
+  return String(value);
+}
+
+const SHOT_SIPS = 3;
+
 // ── Resolution logic ────────────────────────────────────────────────────────────
 function resolveDeclarations(
   pyramidCard: any,
   declarations: Declaration[],
   players: Record<string, any>,
-  currentSips: number
-): { events: ResEvent[]; drinkMap: Record<string, number> } {
+  currentSips: number,
+  drinkingBuddies: Record<string, string>
+): {
+  events: ResEvent[];
+  drinkMap: Record<string, number>;
+  newBuddyLinks: Record<string, string>;
+  giftTargets: { player: string; cards: any[] }[];
+} {
   const events: ResEvent[] = [];
   const protectedPlayers = new Set<string>();
   const drinkMap: Record<string, number> = {};
+  const newBuddyLinks: Record<string, string> = {};
+  const giftTargets: { player: string; cards: any[] }[] = [];
+  const allPlayerNames = Object.keys(players);
 
-  // Step 1: Golden card protections apply first
-  declarations.forEach(({ player, cardGolden, target }) => {
+  const getHandCard = (player: string, cardCode: string) =>
+    (players[player]?.hand || []).find((c: any) => c.code === cardCode) ?? null;
+
+  // Step 1: Golden Hearts → protect target
+  declarations.forEach(({ player, cardCode, cardGolden, target }) => {
     if (!cardGolden) return;
+    const handCard = getHandCard(player, cardCode);
+    if (!handCard || handCard.suit !== 'HEARTS') return;
     protectedPlayers.add(target);
     events.push({ type: 'protect', player, target });
   });
 
-  // Step 2: Value matches → assign drinks to target
+  // Step 2: Golden Clubs → link drinking buddies
+  declarations.forEach(({ player, cardCode, cardGolden, target }) => {
+    if (!cardGolden) return;
+    const handCard = getHandCard(player, cardCode);
+    if (!handCard || handCard.suit !== 'CLUBS') return;
+    newBuddyLinks[player] = target;
+    newBuddyLinks[target] = player;
+    events.push({ type: 'buddy', player, target });
+  });
+
+  // Step 3: Value matches (non-golden) → assign drinks
   declarations.forEach(({ player, cardCode, cardGolden, target }) => {
     if (cardGolden) return;
-    const hand = players[player]?.hand || [];
-    const handCard = hand.find((c: any) => c.code === cardCode);
-    if (!handCard) return;
-    if (handCard.value !== pyramidCard.value) return;
-
+    const handCard = getHandCard(player, cardCode);
+    if (!handCard || handCard.value !== pyramidCard.value) return;
     if (protectedPlayers.has(target)) {
       events.push({ type: 'blocked', from: player, to: target, amount: currentSips });
     } else {
@@ -80,18 +117,36 @@ function resolveDeclarations(
     }
   });
 
-  // Step 3: Suit matches (not value, not golden) → redirect drinks assigned to me
+  // Step 4: Golden Spades → target takes a shot, everyone else sips
+  declarations.forEach(({ player, cardCode, cardGolden, target }) => {
+    if (!cardGolden) return;
+    const handCard = getHandCard(player, cardCode);
+    if (!handCard || handCard.suit !== 'SPADES') return;
+    if (protectedPlayers.has(target)) {
+      events.push({ type: 'blocked', from: player, to: target, amount: SHOT_SIPS });
+    } else {
+      drinkMap[target] = (drinkMap[target] || 0) + SHOT_SIPS;
+      events.push({ type: 'shot', from: player, target });
+    }
+    // Everyone else sips
+    let anyElse = false;
+    allPlayerNames.forEach(name => {
+      if (name === target) return;
+      if (!protectedPlayers.has(name)) {
+        drinkMap[name] = (drinkMap[name] || 0) + 1;
+        anyElse = true;
+      }
+    });
+    if (anyElse) events.push({ type: 'sipAll', from: player, except: target });
+  });
+
+  // Step 5: Suit matches (non-golden, non-value-match) → redirect drinks aimed at me
   declarations.forEach(({ player, cardCode, cardGolden, target }) => {
     if (cardGolden) return;
-    const hand = players[player]?.hand || [];
-    const handCard = hand.find((c: any) => c.code === cardCode);
-    if (!handCard) return;
-    if (handCard.suit !== pyramidCard.suit) return;
-    if (handCard.value === pyramidCard.value) return; // handled in step 2
-
+    const handCard = getHandCard(player, cardCode);
+    if (!handCard || handCard.suit !== pyramidCard.suit || handCard.value === pyramidCard.value) return;
     const sipsComingToMe = drinkMap[player] || 0;
     if (sipsComingToMe <= 0) return;
-
     if (protectedPlayers.has(target)) {
       events.push({ type: 'blocked', from: player, to: target, amount: sipsComingToMe });
     } else {
@@ -101,19 +156,44 @@ function resolveDeclarations(
     }
   });
 
-  return { events, drinkMap };
+  // Step 6: Golden Diamonds → gift target all 4 suits of pyramid card's value
+  declarations.forEach(({ player, cardCode, cardGolden, target }) => {
+    if (!cardGolden) return;
+    const handCard = getHandCard(player, cardCode);
+    if (!handCard || handCard.suit !== 'DIAMONDS') return;
+    const vc = valueToApiCode(pyramidCard.value);
+    const giftCards = ['HEARTS', 'DIAMONDS', 'CLUBS', 'SPADES'].map(suit => ({
+      value: pyramidCard.value,
+      suit,
+      code: `${vc}${suit[0]}`,
+      image: `https://deckofcardsapi.com/static/img/${vc}${suit[0]}.png`,
+      golden: false,
+    }));
+    events.push({ type: 'gift', from: player, to: target, count: 4 });
+    giftTargets.push({ player: target, cards: giftCards });
+  });
+
+  // Step 7: Apply drinking buddy effect (existing + newly formed)
+  const allBuddies = { ...drinkingBuddies, ...newBuddyLinks };
+  const buddyAdditions: Record<string, number> = {};
+  Object.entries(drinkMap).forEach(([p, amount]) => {
+    const buddy = allBuddies[p];
+    if (buddy && !protectedPlayers.has(buddy)) {
+      buddyAdditions[buddy] = (buddyAdditions[buddy] || 0) + amount;
+    }
+  });
+  Object.entries(buddyAdditions).forEach(([p, amount]) => {
+    drinkMap[p] = (drinkMap[p] || 0) + amount;
+  });
+
+  return { events, drinkMap, newBuddyLinks, giftTargets };
 }
 
 // ── Resolution overlay ──────────────────────────────────────────────────────────
-function ResEventCard({ event, delay }: { event: ResEvent; delay: number }) {
-  const baseStyle: React.CSSProperties = {
-    animationDelay: `${delay}s`,
-    animationFillMode: 'both',
-  };
-
+function ResEventCard({ event }: { event: ResEvent }) {
   if (event.type === 'protect') {
     return (
-      <div className="res-event-protect" style={baseStyle}>
+      <div className="res-event-protect" style={{ animation: 'slide-bounce-in 0.5s ease both' }}>
         <span className="res-icon">🛡️</span>
         <span className="res-text">
           <b style={{ color: 'var(--gold)' }}>{event.player}</b>
@@ -126,7 +206,7 @@ function ResEventCard({ event, delay }: { event: ResEvent; delay: number }) {
 
   if (event.type === 'assign') {
     return (
-      <div className="res-event-assign" style={baseStyle}>
+      <div className="res-event-assign" style={{ animation: 'slide-bounce-in 0.5s ease both' }}>
         <span className="res-icon">🍺</span>
         <span className="res-text">
           <b style={{ color: 'var(--green)' }}>{event.from}</b>
@@ -139,7 +219,7 @@ function ResEventCard({ event, delay }: { event: ResEvent; delay: number }) {
 
   if (event.type === 'redirect') {
     return (
-      <div className="res-event-redirect" style={baseStyle}>
+      <div className="res-event-redirect" style={{ animation: 'slide-bounce-in 0.5s ease both' }}>
         <span className="res-icon">🏓</span>
         <span className="res-text">
           <b style={{ color: 'var(--gold)' }}>{event.from}</b>
@@ -152,7 +232,7 @@ function ResEventCard({ event, delay }: { event: ResEvent; delay: number }) {
 
   if (event.type === 'blocked') {
     return (
-      <div className="res-event-blocked" style={baseStyle}>
+      <div className="res-event-blocked" style={{ animation: 'slide-bounce-in 0.5s ease both' }}>
         <span className="res-icon">🚫</span>
         <span className="res-text">
           <b style={{ color: 'var(--red)' }}>{event.from}</b>
@@ -163,10 +243,74 @@ function ResEventCard({ event, delay }: { event: ResEvent; delay: number }) {
     );
   }
 
+  if (event.type === 'shot') {
+    return (
+      <div style={{ animation: 'slide-bounce-in 0.5s ease both', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 12, background: 'rgba(255,107,53,0.12)', border: '1px solid rgba(255,107,53,0.45)' }}>
+        <span className="res-icon">🥃</span>
+        <span className="res-text">
+          <b style={{ color: '#ff6b35' }}>{event.from}</b>
+          {' '}→ <b style={{ color: 'var(--red)' }}>{event.target}</b>
+          {' '}<span style={{ color: 'var(--white-dim)' }}>takes a SHOT!</span>
+        </span>
+      </div>
+    );
+  }
+
+  if (event.type === 'sipAll') {
+    return (
+      <div style={{ animation: 'slide-bounce-in 0.5s ease both', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 12, background: 'rgba(45,186,110,0.08)', border: '1px solid rgba(45,186,110,0.25)' }}>
+        <span className="res-icon">💧</span>
+        <span className="res-text">
+          <b style={{ color: '#ff6b35' }}>{event.from}</b>
+          {' '}<span style={{ color: 'var(--white-dim)' }}>→ everyone else sips</span>
+        </span>
+      </div>
+    );
+  }
+
+  if (event.type === 'buddy') {
+    return (
+      <div style={{ animation: 'slide-bounce-in 0.5s ease both', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 12, background: 'rgba(168,85,247,0.10)', border: '1px solid rgba(168,85,247,0.40)' }}>
+        <span className="res-icon">🤝</span>
+        <span className="res-text">
+          <b style={{ color: '#a855f7' }}>{event.player}</b>
+          {' '}&amp;{' '}<b style={{ color: '#a855f7' }}>{event.target}</b>
+          {' '}<span style={{ color: 'var(--white-dim)' }}>are now drinking buddies!</span>
+        </span>
+      </div>
+    );
+  }
+
+  if (event.type === 'gift') {
+    return (
+      <div style={{ animation: 'slide-bounce-in 0.5s ease both', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 16px', borderRadius: 12, background: 'rgba(78,205,196,0.10)', border: '1px solid rgba(78,205,196,0.40)' }}>
+        <span className="res-icon">💎</span>
+        <span className="res-text">
+          <b style={{ color: '#4ecdc4' }}>{event.from}</b>
+          {' '}→ <b style={{ color: '#4ecdc4' }}>{event.to}</b>
+          {' '}<span style={{ color: 'var(--white-dim)' }}>receives {event.count} cards!</span>
+        </span>
+      </div>
+    );
+  }
+
   return null;
 }
 
+const RESOLUTION_EVENT_INTERVAL_MS = 1800;
+
 function PyramidResolutionOverlay({ events }: { events: ResEvent[] }) {
+  const [visibleCount, setVisibleCount] = React.useState(0);
+
+  React.useEffect(() => {
+    setVisibleCount(events.length === 0 ? 1 : 0);
+    if (events.length === 0) return;
+    const timers = events.map((_, i) =>
+      setTimeout(() => setVisibleCount(i + 1), i * RESOLUTION_EVENT_INTERVAL_MS)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [events]);
+
   return (
     <div
       style={{
@@ -196,18 +340,20 @@ function PyramidResolutionOverlay({ events }: { events: ResEvent[] }) {
         Resolution
       </div>
       {events.length === 0 ? (
-        <div
-          style={{
-            color: 'var(--white-dim)',
-            fontSize: '0.9rem',
-            animation: 'slide-bounce-in 0.5s ease both',
-          }}
-        >
-          No declarations — everyone passes!
-        </div>
+        visibleCount > 0 && (
+          <div
+            style={{
+              color: 'var(--white-dim)',
+              fontSize: '0.9rem',
+              animation: 'slide-bounce-in 0.5s ease both',
+            }}
+          >
+            No declarations — everyone passes!
+          </div>
+        )
       ) : (
-        events.map((event, i) => (
-          <ResEventCard key={i} event={event} delay={i * 0.45} />
+        events.slice(0, visibleCount).map((event, i) => (
+          <ResEventCard key={i} event={event} />
         ))
       )}
     </div>
@@ -305,15 +451,15 @@ function RunningLeaderboard({ players }: { players: Record<string, any> }) {
         top: 72,
         left: 16,
         zIndex: 20,
-        width: 172,
+        width: 230,
         display: 'flex',
         flexDirection: 'column',
-        gap: 4,
+        gap: 6,
       }}
     >
       <div
         style={{
-          fontSize: '0.6rem',
+          fontSize: '0.7rem',
           fontWeight: 700,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
@@ -330,8 +476,8 @@ function RunningLeaderboard({ players }: { players: Record<string, any> }) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            borderRadius: 8,
-            padding: '5px 10px',
+            borderRadius: 10,
+            padding: '8px 14px',
             background: i === 0 ? 'rgba(232,184,75,0.08)' : 'rgba(255,255,255,0.04)',
             border: `1px solid ${i === 0 ? 'rgba(232,184,75,0.25)' : 'rgba(255,255,255,0.07)'}`,
           }}
@@ -339,21 +485,21 @@ function RunningLeaderboard({ players }: { players: Record<string, any> }) {
           <span
             style={{
               color: i === 0 ? 'var(--gold)' : 'var(--white)',
-              fontSize: '0.78rem',
+              fontSize: '0.95rem',
               fontWeight: 600,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
-              maxWidth: 80,
+              maxWidth: 110,
             }}
           >
             {name}
           </span>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-            <span style={{ color: 'var(--green)', fontSize: '0.72rem', fontWeight: 700 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+            <span style={{ color: 'var(--green)', fontSize: '0.85rem', fontWeight: 700 }}>
               {(p.hand || []).length} 🃏
             </span>
-            <span style={{ color: 'var(--red)', fontSize: '0.65rem', fontWeight: 600 }}>
+            <span style={{ color: 'var(--red)', fontSize: '0.8rem', fontWeight: 600 }}>
               {p.sips || 0} 💧
             </span>
           </div>
@@ -385,6 +531,9 @@ export default function PartyGame() {
     resetState,
     addSips,
     addToHand,
+    addCardsToHand,
+    removeFromHand,
+    setDrinkingBuddy,
     pyramidFlipNext,
     finishPyramidPhase,
     enterPyramidPhase,
@@ -535,36 +684,55 @@ export default function PartyGame() {
     pyramidReadyCountRef.current = 0;
     pyramidPlayerCountRef.current = playerNames.length;
 
+    const DECLARE_WINDOW_MS = 30000;
+
     const setCountdown = (val: number | null) => {
       pyramidCountdownRef.current = val;
       setPyramidCountdown(val);
     };
-    setCountdown(10);
+    setCountdown(DECLARE_WINDOW_MS / 1000);
 
     const resolve = () => {
       if (pyramidIntervalRef.current) { clearInterval(pyramidIntervalRef.current); pyramidIntervalRef.current = null; }
       if (pyramidTimerRef.current) { clearTimeout(pyramidTimerRef.current); pyramidTimerRef.current = null; }
       setCountdown(null);
 
-      const { events, drinkMap } = resolveDeclarations(
+      const { events, drinkMap, newBuddyLinks, giftTargets } = resolveDeclarations(
         currentCard,
         declarationsRef.current,
         state.players,
-        currentSips
+        currentSips,
+        state.drinkingBuddies || {}
       );
 
       Object.entries(drinkMap).forEach(([player, sips]) => {
         if (sips > 0) addSips(player, sips);
       });
 
+      // Remove used cards from player hands
+      declarationsRef.current.forEach(({ player, cardCode }) => {
+        removeFromHand(player, cardCode);
+      });
+
+      // Gift cards (golden diamonds)
+      giftTargets.forEach(({ player, cards }) => {
+        addCardsToHand(player, cards);
+      });
+
+      // Persist new buddy links (golden clubs)
+      Object.entries(newBuddyLinks).forEach(([player, buddy]) => {
+        if (player < buddy) setDrinkingBuddy(player, buddy); // call once per pair
+      });
+
       socketRef.current?.emit('pyramidResolution', events);
       setResolutionEvents(events);
       setShowResolution(true);
 
+      const displayMs = Math.max(4000, events.length * RESOLUTION_EVENT_INTERVAL_MS + 2500);
       setTimeout(() => {
         setShowResolution(false);
         pyramidFlipNext();
-      }, 4000);
+      }, displayMs);
     };
 
     pyramidResolveRef.current = resolve;
@@ -577,7 +745,7 @@ export default function PartyGame() {
       }
     }, 1000);
 
-    pyramidTimerRef.current = setTimeout(resolve, 10000);
+    pyramidTimerRef.current = setTimeout(resolve, DECLARE_WINDOW_MS);
 
     socketRef.current?.emit('pyramidDeclarePhase', state.pyramidIndex, currentCard, currentSips, playerNames);
 

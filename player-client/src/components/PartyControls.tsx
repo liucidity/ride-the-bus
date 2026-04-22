@@ -7,7 +7,11 @@ type ResEvent =
   | { type: 'assign'; from: string; to: string; amount: number }
   | { type: 'redirect'; from: string; to: string; amount: number }
   | { type: 'protect'; player: string; target: string }
-  | { type: 'blocked'; from: string; to: string; amount: number };
+  | { type: 'blocked'; from: string; to: string; amount: number }
+  | { type: 'shot'; from: string; target: string }
+  | { type: 'sipAll'; from: string; except: string }
+  | { type: 'buddy'; player: string; target: string }
+  | { type: 'gift'; from: string; to: string; count: number };
 
 type Props = {
   player: string;
@@ -80,8 +84,15 @@ function valueDisplay(value: number): string {
 function getCardEffect(
   handCard: HandCard,
   pyramidCard: HandCard
-): 'protect' | 'assign' | 'redirect' | 'none' {
-  if (handCard.golden) return 'protect';
+): 'protect' | 'gift' | 'shot' | 'buddy' | 'assign' | 'redirect' | 'none' {
+  if (handCard.golden) {
+    switch (handCard.suit) {
+      case 'HEARTS':   return 'protect';
+      case 'DIAMONDS': return 'gift';
+      case 'SPADES':   return 'shot';
+      case 'CLUBS':    return 'buddy';
+    }
+  }
   if (handCard.value === pyramidCard.value) return 'assign';
   if (handCard.suit === pyramidCard.suit) return 'redirect';
   return 'none';
@@ -332,14 +343,57 @@ function ResEventItem({ event, delay }: { event: ResEvent; delay: number }) {
     </div>
   );
 
+  if (event.type === 'shot') return (
+    <div style={{ ...style, background: 'rgba(255,107,53,0.10)', border: '1px solid rgba(255,107,53,0.40)', animation: 'slideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both' }}>
+      <span>🥃</span>
+      <span style={{ color: '#f8f0e3' }}>
+        <b style={{ color: '#ff6b35' }}>{event.from}</b> → <b style={{ color: '#e0403a' }}>{event.target}</b>
+        <span style={{ color: 'rgba(248,240,227,0.6)', fontWeight: 400 }}> takes a SHOT!</span>
+      </span>
+    </div>
+  );
+
+  if (event.type === 'sipAll') return (
+    <div style={{ ...style, background: 'rgba(45,186,110,0.08)', border: '1px solid rgba(45,186,110,0.28)', animation: 'slideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both' }}>
+      <span>💧</span>
+      <span style={{ color: '#f8f0e3' }}>
+        <b style={{ color: '#ff6b35' }}>{event.from}</b>
+        <span style={{ color: 'rgba(248,240,227,0.6)', fontWeight: 400 }}> → everyone else sips</span>
+      </span>
+    </div>
+  );
+
+  if (event.type === 'buddy') return (
+    <div style={{ ...style, background: 'rgba(168,85,247,0.10)', border: '1px solid rgba(168,85,247,0.40)', animation: 'slideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both' }}>
+      <span>🤝</span>
+      <span style={{ color: '#f8f0e3' }}>
+        <b style={{ color: '#a855f7' }}>{event.player}</b> &amp; <b style={{ color: '#a855f7' }}>{event.target}</b>
+        <span style={{ color: 'rgba(248,240,227,0.6)', fontWeight: 400 }}> are drinking buddies!</span>
+      </span>
+    </div>
+  );
+
+  if (event.type === 'gift') return (
+    <div style={{ ...style, background: 'rgba(78,205,196,0.10)', border: '1px solid rgba(78,205,196,0.40)', animation: 'slideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both' }}>
+      <span>💎</span>
+      <span style={{ color: '#f8f0e3' }}>
+        <b style={{ color: '#4ecdc4' }}>{event.from}</b> → <b style={{ color: '#4ecdc4' }}>{event.to}</b>
+        <span style={{ color: 'rgba(248,240,227,0.6)', fontWeight: 400 }}> receives {event.count} cards!</span>
+      </span>
+    </div>
+  );
+
   return null;
 }
 
 const EFFECT_LABELS: Record<string, { label: string; color: string; desc: string }> = {
-  protect: { label: '🛡️ Shield', color: '#e8b84b', desc: 'Choose a player to protect from drinks this round.' },
-  assign:  { label: '🍺 Assign', color: '#e0403a', desc: 'Choose someone to drink!' },
-  redirect:{ label: '🏓 Redirect', color: '#2dba6e', desc: 'Send drinks headed your way to someone else.' },
-  none:    { label: '✗ No match', color: 'rgba(255,255,255,0.35)', desc: 'This card has no effect on the current pyramid card.' },
+  protect: { label: '🛡️ Shield',     color: '#e8b84b', desc: 'Choose a player to protect from drinks this card.' },
+  gift:    { label: '💎 Gift Cards', color: '#4ecdc4', desc: 'Give target all 4 suits of the pyramid card\'s value.' },
+  shot:    { label: '🥃 Shot!',      color: '#ff6b35', desc: 'Target takes a shot, everyone else sips.' },
+  buddy:   { label: '🤝 Buddy',      color: '#a855f7', desc: 'Link target as your drinking buddy — you share all drinks.' },
+  assign:  { label: '🍺 Assign',     color: '#e0403a', desc: 'Choose someone to drink!' },
+  redirect:{ label: '🏓 Redirect',   color: '#2dba6e', desc: 'Send drinks headed your way to someone else.' },
+  none:    { label: '✗ No match',    color: 'rgba(255,255,255,0.35)', desc: 'This card has no effect on the current pyramid card.' },
 };
 
 export default function PartyControls({
@@ -379,9 +433,9 @@ export default function PartyControls({
     : declarationAllPlayers;
 
   const effectTargets: string[] =
-    effect === 'protect'
+    effect === 'protect' || effect === 'gift'
       ? allPlayers
-      : effect === 'assign' || effect === 'redirect'
+      : effect === 'assign' || effect === 'redirect' || effect === 'shot' || effect === 'buddy'
       ? allPlayers.filter(p => p !== player)
       : [];
 
@@ -449,6 +503,9 @@ export default function PartyControls({
     const effectColor =
       effect === 'protect' ? '#e8b84b' :
       effect === 'redirect' ? '#2dba6e' :
+      effect === 'gift' ? '#4ecdc4' :
+      effect === 'buddy' ? '#a855f7' :
+      effect === 'shot' ? '#ff6b35' :
       '#e0403a';
 
     return (
@@ -518,7 +575,12 @@ export default function PartyControls({
                     <span>{name}{isMe ? ' (me)' : ''}</span>
                     {isTarget && (
                       <span style={{ fontSize: '0.75rem', color: effectColor, fontWeight: 700 }}>
-                        {effect === 'protect' ? '🛡️ Shield' : effect === 'redirect' ? '🏓 Send' : '🍺 Give'}
+                        {effect === 'protect' ? '🛡️ Shield'
+                          : effect === 'redirect' ? '🏓 Send'
+                          : effect === 'gift' ? '💎 Gift'
+                          : effect === 'shot' ? '🥃 Shot'
+                          : effect === 'buddy' ? '🤝 Link'
+                          : '🍺 Give'}
                       </span>
                     )}
                   </button>
